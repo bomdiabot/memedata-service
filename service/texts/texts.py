@@ -65,7 +65,7 @@ class Text(Resource):
             return mk_errors('{} existn\'t'.format(uid))
 
         try:
-            dct = TextSchema().load(request.form)
+            dct = TextSchema().load(request.values)
         except ValidationError as e:
             return mk_errors({'ValidationError': e.messages})
 
