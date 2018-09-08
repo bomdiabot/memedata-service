@@ -83,7 +83,7 @@ class Text(Resource):
 class Texts(Resource):
     def post(self):
         try:
-            dct = TextSchema().load(request.form)
+            dct = TextSchema().load(request.values)
         except ValidationError as e:
             return mk_errors({'ValidationError': e.messages})
         uid = max(_get_uids(), default=0) + 1
