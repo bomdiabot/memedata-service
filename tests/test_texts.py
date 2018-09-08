@@ -1,5 +1,6 @@
 def test_texts_get_correct_response_format(client):
     resp = client.get('/texts')
+    assert resp.status_code == 200
     assert 'texts' in resp.json
     assert resp.json['texts'] == []
 
@@ -31,6 +32,7 @@ def test_texts_get_correct_elems(client):
 
 def test_texts_post_data_correct_response_format(client):
     resp = client.post('/texts', data={'content': 'this is a test'})
+    assert resp.status_code == 201
     assert 'text' in resp.json
     obj = resp.json['text']
     assert 'uid' in obj
@@ -70,6 +72,7 @@ def test_text_get_correct_response_format(client):
     uid = resp.json['text']['uid']
 
     resp = client.get('/texts/{}'.format(uid))
+    assert resp.status_code == 200
     assert 'text' in resp.json
     obj = resp.json['text']
     assert 'uid' in obj
@@ -91,6 +94,7 @@ def test_text_put_correct_response_format(client):
     uid = obj['uid']
 
     resp = client.put('/texts/{}?content=modified'.format(uid))
+    assert resp.status_code == 200
     assert 'text' in resp.json
     obj = resp.json['text']
     assert 'uid' in obj
@@ -116,8 +120,7 @@ def test_text_delete_correct_response_format(client):
     uid = obj['uid']
 
     resp = client.delete('/texts/{}'.format(uid))
-    assert resp.status_code == 200
-    assert resp.get_json() == ''
+    assert resp.status_code == 204
 
 def test_text_delete_deletes_elem(client):
     obj = client.post('/texts?content=eyb0ss').json['text']

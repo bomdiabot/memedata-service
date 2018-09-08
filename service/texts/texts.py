@@ -78,7 +78,7 @@ class Text(Resource):
         if not _exists(uid):
             return mk_errors('{} does not exist'.format(uid))
         del DB[uid]
-        return '', 200
+        return '', 204
 
 class Texts(Resource):
     def post(self):
@@ -88,7 +88,7 @@ class Texts(Resource):
             return mk_errors({'ValidationError': e.messages})
         uid = max(_get_uids(), default=0) + 1
         DB[uid] = TextDao(uid, **dct)
-        return TextSchema().dump(DB[uid])
+        return TextSchema().dump(DB[uid]), 201
 
     def get(self):
         return TextSchema(many=True).dump(DB.values())
