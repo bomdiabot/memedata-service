@@ -5,6 +5,9 @@ def test_texts_get_correct_response_format(client):
     assert resp.json['texts'] == []
 
 def test_texts_get_correct_number_elems(client):
+    obj = client.get('/texts').json
+    assert len(obj['texts']) == 0
+
     client.post('/texts', data={'content': 'test1'})
     obj = client.get('/texts').json
     assert len(obj['texts']) == 1
@@ -34,6 +37,7 @@ def test_texts_post_data_correct_response_format(client):
     resp = client.post('/texts', data={'content': 'this is a test'})
     assert resp.status_code == 201
     assert 'text' in resp.json
+
     obj = resp.json['text']
     assert 'uid' in obj
     assert 'content' in obj
@@ -43,6 +47,7 @@ def test_texts_post_data_correct_response_format(client):
 def test_texts_post_qstring_correct_response_format(client):
     resp = client.post('/texts?content=this is a test')
     assert 'text' in resp.json
+
     obj = resp.json['text']
     assert 'uid' in obj
     assert 'content' in obj
@@ -67,6 +72,17 @@ def test_texts_post_correct_response_fields_2(client):
     assert obj2['created_at'] == obj2['modified_at']
     assert obj1['created_at'] != obj2['created_at']
 
+def test_texts_post_ignores_spurious_args(client):
+    resp = client.post('/texts',
+        data={'content': 'test 1', 'ow': 'hehe', 'ljh': 'hhh'})
+    assert resp.status_code == 201
+    assert 'text' in resp.json
+
+def test_texts_post_correct_error_format(client):
+    resp = client.post('/texts', data={'wrong': 'keypair'})
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
+
 def test_text_get_correct_response_format(client):
     resp = client.post('/texts?content=eyb0ss')
     uid = resp.json['text']['uid']
@@ -74,6 +90,7 @@ def test_text_get_correct_response_format(client):
     resp = client.get('/texts/{}'.format(uid))
     assert resp.status_code == 200
     assert 'text' in resp.json
+
     obj = resp.json['text']
     assert 'uid' in obj
     assert 'content' in obj
@@ -89,6 +106,11 @@ def test_text_get_correct_response_fields(client):
     assert obj['content'] == 'eyb0ss'
     assert obj['created_at'] == obj['modified_at']
 
+def test_text_get_correct_error_format(client):
+    resp = client.get('/texts/1')
+    assert resp.status_code == 404
+    assert set(resp.json.keys()) == {'errors'}
+
 def test_text_put_correct_response_format(client):
     obj = client.post('/texts?content=eyb0ss').json['text']
     uid = obj['uid']
@@ -96,6 +118,7 @@ def test_text_put_correct_response_format(client):
     resp = client.put('/texts/{}?content=modified'.format(uid))
     assert resp.status_code == 200
     assert 'text' in resp.json
+
     obj = resp.json['text']
     assert 'uid' in obj
     assert 'content' in obj
@@ -114,6 +137,19 @@ def test_text_put_correct_response_fields(client):
     assert obj['created_at'] == orig_created_at
     assert obj['modified_at'] != orig_modified_at
     assert obj['content'] == 'modified'
+
+def test_text_put_correct_error_format_1(client):
+    resp = client.put('/texts/3')
+    assert resp.status_code == 404
+    assert set(resp.json.keys()) == {'errors'}
+
+def test_text_put_correct_error_format_2(client):
+    obj = client.post('/texts?content=eyb0ss').json['text']
+    uid = obj['uid']
+
+    resp = client.put('/texts/{}'.format(uid), data={'wrong': 'keypair'})
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
 
 def test_text_delete_correct_response_format(client):
     obj = client.post('/texts?content=eyb0ss').json['text']
@@ -139,3 +175,8 @@ def test_text_delete_deletes_correct_elem(client):
     obj = client.get('/texts').json['texts']
     assert len(obj) == 1
     assert obj[0]['content'] == 'eyb0ss'
+
+def test_text_delete_correct_error_format(client):
+    resp = client.delete('/texts/3')
+    assert resp.status_code == 404
+    assert set(resp.json.keys()) == {'errors'}

@@ -13,6 +13,12 @@ from marshmallow import (
     fields,
     ValidationError,
     post_dump,
+    EXCLUDE,
+)
+
+from service.util import (
+    mk_errors,
+    fmt_validation_error_messages,
 )
 
 import datetime as dt
@@ -42,6 +48,9 @@ class ImageSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
 
+    class Meta:
+        unknown = EXCLUDE
+
     @staticmethod
     def get_envelope_key(many):
         return 'images' if many else 'image'
@@ -60,34 +69,26 @@ def _get_path(uid, mimetype):
 def _exists(uid):
     return uid in DB.keys()
 
-def mk_errors(errors, code=400):
-    if not isinstance(errors, list):
-        errors = [errors]
-    return {'errors': errors}, code
-
 class Image(Resource):
     def get(self, uid):
         if not _exists(uid):
-            return mk_errors('{} doest not exist'.format(uid))
+            return mk_errors(404, '{} does not exist'.format(uid))
 
-        if not request.mimetype or request.mimetype == 'application/json':
-            return ImageSchema().dump(DB[uid])
-        elif request.mimetype in VALID_MIMETYPES:
-            return send_file(_get_path(uid, request.mimetype), request.mimetype)
+        for mt, __ in request.accept_mimetypes:
+            if mt in VALID_MIMETYPES:
+                return send_file(_get_path(uid, mt), mt)
         else:
-            return mk_errors(
-                '"{}" is not a valid mimetype for request'.format(
-                    request.mimetype))
+            return ImageSchema().dump(DB[uid])
 
     def put(self, uid):
         if not _exists(uid):
-            return mk_errors('{} existn\'t'.format(uid))
+            return mk_errors(404, '{} does not exist'.format(uid))
 
         data = request.files.get('image')
         if data is None:
-            return mk_errors('image file not present')
+            return mk_errors(400, 'image file not present')
         elif data.mimetype not in VALID_MIMETYPES:
-            return mk_errors('wrong file format (must be png or jpg)')
+            return mk_errors(400, 'wrong file format (must be png or jpg)')
         else:
             for mt in VALID_MIMETYPES:
                 path = _get_path(uid, mt)
@@ -101,33 +102,33 @@ class Image(Resource):
 
     def delete(self, uid):
         if not _exists(uid):
-            return mk_errors('{} does not exist'.format(uid))
+            return mk_errors(404, '{} does not exist'.format(uid))
 
         for mt in VALID_MIMETYPES:
             path = _get_path(uid, mt)
             if os.path.isfile(path):
                 break
         else:
-            raise
+            return mk_errors(500, 'internal error')
 
         os.remove(path)
         del DB[uid]
-        return '', 200
+        return '', 204
 
 class Images(Resource):
     def post(self):
         data = request.files.get('image')
         if data is None:
-            return mk_errors('image file not present')
+            return mk_errors(400, 'image file not present')
         elif data.mimetype not in VALID_MIMETYPES:
-            return mk_errors('wrong file format (must be png or jpg)')
+            return mk_errors(400, 'wrong file format (must be png or jpg)')
         else:
             uid = max(_get_uids(), default=0) + 1
             path = _get_path(uid, data.mimetype)
             data.save(path)
             obj = ImageDao(uid)
             DB[uid] = obj
-            return ImageSchema().dump(obj), 200
+            return ImageSchema().dump(obj), 201
 
     def get(self):
         return ImageSchema(many=True).dump(DB.values())

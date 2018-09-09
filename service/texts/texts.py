@@ -5,7 +5,6 @@ from flask import (
 
 from flask_restful import (
     Resource,
-    abort,
 )
 
 from marshmallow import (
@@ -13,6 +12,12 @@ from marshmallow import (
     fields,
     ValidationError,
     post_dump,
+    EXCLUDE,
+)
+
+from service.util import (
+    mk_errors,
+    fmt_validation_error_messages,
 )
 
 import datetime as dt
@@ -35,6 +40,9 @@ class TextSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
     modified_at = fields.DateTime(dump_only=True)
 
+    class Meta:
+        unknown = EXCLUDE
+
     @staticmethod
     def get_envelope_key(many):
         return 'texts' if many else 'text'
@@ -49,25 +57,20 @@ def _get_uids():
 def _exists(uid):
     return uid in DB.keys()
 
-def mk_errors(errors, code=400):
-    if not isinstance(errors, list):
-        errors = [errors]
-    return {'errors': errors}, code
-
 class Text(Resource):
     def get(self, uid):
         if not _exists(uid):
-            return mk_errors('{} doest not exist'.format(uid))
+            return mk_errors(404, '{} doest not exist'.format(uid))
         return TextSchema().dump(DB[uid])
 
     def put(self, uid):
         if not _exists(uid):
-            return mk_errors('{} existn\'t'.format(uid))
+            return mk_errors(404, '{} existn\'t'.format(uid))
 
         try:
             dct = TextSchema().load(request.values)
         except ValidationError as e:
-            return mk_errors({'ValidationError': e.messages})
+            return mk_errors(400, fmt_validation_error_messages(e.messages))
 
         for k, v in dct.items():
             setattr(DB[uid], k, v)
@@ -76,7 +79,7 @@ class Text(Resource):
 
     def delete(self, uid):
         if not _exists(uid):
-            return mk_errors('{} does not exist'.format(uid))
+            return mk_errors(404, '{} does not exist'.format(uid))
         del DB[uid]
         return '', 204
 
@@ -85,7 +88,7 @@ class Texts(Resource):
         try:
             dct = TextSchema().load(request.values)
         except ValidationError as e:
-            return mk_errors({'ValidationError': e.messages})
+            return mk_errors(400, fmt_validation_error_messages(e.messages))
         uid = max(_get_uids(), default=0) + 1
         DB[uid] = TextDao(uid, **dct)
         return TextSchema().dump(DB[uid]), 201

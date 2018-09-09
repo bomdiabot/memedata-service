@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 -m service.api
+python3 -m service.api $@
