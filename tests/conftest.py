@@ -1,6 +1,7 @@
 import pytest
 from service.api import get_app, get_api
 from service import texts, images
+from service.database import drop_all
 
 from io import BytesIO
 from PIL import Image
@@ -28,10 +29,10 @@ def image_getter():
 def client(app_api):
     #setup
     app, api = app_api
+    drop_all()
 
     with app.test_client() as c:
         yield c
 
-    #teardown
-    texts.DB.clear()
+    #fake images db
     images.DB.clear()

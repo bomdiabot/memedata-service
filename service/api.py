@@ -8,15 +8,19 @@ from flask_restful import (
 )
 
 from .images import Image, Images
-from .texts import Text, Texts
-from .database import db_session
+from .texts import TextRes, TextsRes
+from .database import session as db, DB_PATH
+
+DEBUG = not True
 
 def get_app():
-    app = Flask(__name__)
+    app = Flask('memedata-service')
 
+    #db stuff
+    app.config['SQLALCHEMY_DATABASE_URI'] = DB_PATH 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
-        db_session.remove()
+        db.remove()
 
     return app
 
@@ -24,14 +28,14 @@ def get_api(app):
     api = Api(app)
     api.add_resource(Image, '/images/<int:uid>')
     api.add_resource(Images, '/images')
-    api.add_resource(Text, '/texts/<int:uid>')
-    api.add_resource(Texts, '/texts')
+    api.add_resource(TextRes, '/texts/<int:uid>')
+    api.add_resource(TextsRes, '/texts')
     return api
 
 def main():
     app = get_app()
     api = get_api(app)
-    app.run()
+    app.run(debug=DEBUG)
 
 if __name__ == '__main__':
     main()

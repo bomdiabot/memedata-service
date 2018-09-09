@@ -1,6 +1,7 @@
 from flask import (
     request,
     send_file,
+    abort,
 )
 
 from flask_restful import (
@@ -20,28 +21,30 @@ from service.util import (
     fmt_validation_error_messages,
 )
 
+from service.database import (
+    session as db,
+)
+
+from service.models import (
+    Text,
+)
+
+from marshmallow_sqlalchemy import (
+    ModelSchema,
+    field_for,
+)
+
 import datetime as dt
 
-DB = {}
-
-class TextDao:
-    def __init__(self, uid, content=''):
-        self.uid = uid
-        self.content = content
-        self.created_at = dt.datetime.now()
-        self.modified_at = self.created_at
-
-    def __repr__(self):
-        return 'Text(uid={}, content={})'.format(self.uid, self.content)
-
-class TextSchema(Schema):
-    uid = fields.Integer(dump_only=True)
-    content = fields.String(required=True)
-    created_at = fields.DateTime(dump_only=True)
-    modified_at = fields.DateTime(dump_only=True)
+class TextSchema(ModelSchema):
+    content = field_for(Text, 'content', required=True)
+    created_at = field_for(Text, 'created_at', dump_only=True)
+    updated_at = field_for(Text, 'updated_at', dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
+        model = Text
+        sqla_session = db
 
     @staticmethod
     def get_envelope_key(many):
@@ -51,47 +54,44 @@ class TextSchema(Schema):
     def envelope(self, dct, many):
         return {TextSchema.get_envelope_key(many): dct}
 
-def _get_uids():
-    return set(DB.keys())
+class TextRes(Resource):
+    @staticmethod
+    def get_text(uid):
+        text = Text.query.get(uid)
+        if text is None:
+            abort(mk_errors(404, '{} doest not exist'.format(uid)))
+        return text
 
-def _exists(uid):
-    return uid in DB.keys()
-
-class Text(Resource):
     def get(self, uid):
-        if not _exists(uid):
-            return mk_errors(404, '{} doest not exist'.format(uid))
-        return TextSchema().dump(DB[uid])
+        text = TextRes.get_text(uid)
+        return TextSchema().dump(text)
 
     def put(self, uid):
-        if not _exists(uid):
-            return mk_errors(404, '{} existn\'t'.format(uid))
-
+        text = TextRes.get_text(uid)
         try:
-            dct = TextSchema().load(request.values)
+            schema = TextSchema()
+            text = schema.load(request.values, instance=text, partial=True)
         except ValidationError as e:
             return mk_errors(400, fmt_validation_error_messages(e.messages))
-
-        for k, v in dct.items():
-            setattr(DB[uid], k, v)
-        DB[uid].modified_at = dt.datetime.now()
-        return TextSchema().dump(DB[uid])
+        db.add(text)
+        db.commit()
+        return schema.dump(text)
 
     def delete(self, uid):
-        if not _exists(uid):
-            return mk_errors(404, '{} does not exist'.format(uid))
-        del DB[uid]
+        text = TextRes.get_text(uid)
+        db.delete(text)
+        db.commit()
         return '', 204
 
-class Texts(Resource):
+class TextsRes(Resource):
     def post(self):
         try:
-            dct = TextSchema().load(request.values)
+            text = TextSchema().load(request.values)
         except ValidationError as e:
             return mk_errors(400, fmt_validation_error_messages(e.messages))
-        uid = max(_get_uids(), default=0) + 1
-        DB[uid] = TextDao(uid, **dct)
-        return TextSchema().dump(DB[uid]), 201
+        db.add(text)
+        db.commit()
+        return TextSchema().dump(text), 201
 
     def get(self):
-        return TextSchema(many=True).dump(DB.values())
+        return TextSchema(many=True).dump(Text.query.all())

@@ -1,3 +1,8 @@
+from flask import (
+    make_response,
+    jsonify,
+)
+
 def flatten(lsts):
     return [item for sublst in lsts for item in sublst]
 
@@ -21,10 +26,13 @@ def mk_error(message_or_error, code=None):
         error['code'] = int(code)
     return error
 
-def mk_errors(code, messages_or_errors):
+def mk_errors(code, messages_or_errors, as_response=True):
     messages_or_errors = to_list(messages_or_errors)
     errors = [mk_error(me) for me in messages_or_errors]
-    return {'errors': errors}, code
+    if as_response:
+        return make_response(jsonify({'errors': errors}), code)
+    else:
+        return {'errors': errors}, code
 
 def fmt_validation_error_messages(messages):
     if isinstance(messages, dict):

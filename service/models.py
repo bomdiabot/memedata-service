@@ -9,7 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from service.database import Base
+from service.database import Base, engine
 
 text_tag_association = Table('association', Base.metadata,
     Column('text_id', Integer, ForeignKey('texts.text_id')),
@@ -19,7 +19,7 @@ text_tag_association = Table('association', Base.metadata,
 class Text(Base):
     __tablename__ = 'texts'
     text_id = Column(Integer, primary_key=True)
-    content = Column(Text(), unique=True)
+    content = Column(Text(), unique=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     tags = relationship('Tag', secondary=text_tag_association)
@@ -33,7 +33,7 @@ class Text(Base):
 class Tag(Base):
     __tablename__ = 'tags'
     tag_id = Column(Integer, primary_key=True)
-    content = Column(String(32), unique=True)
+    content = Column(String(32), unique=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -43,4 +43,4 @@ class Tag(Base):
     def __repr__(self):
         return '<Tag %r>' % (self.content)
 
-
+Base.metadata.create_all(bind=engine)

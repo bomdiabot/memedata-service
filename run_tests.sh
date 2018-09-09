@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 -m pytest tests/ $@
+[[ -z $@ ]] && target=./tests/ || target=$@
+python3 -m pytest $target
