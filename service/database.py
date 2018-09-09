@@ -13,3 +13,13 @@ Base.query = db_session.query_property()
 def init_db():
     import service.models
     Base.metadata.create_all(bind=engine)
+
+def drop_all():
+    '''
+    THIS WILL DELETE ALL DATABASE!
+    only use it for debug purposes
+    '''
+    for table in reversed(Base.metadata.sorted_tables):
+        print('deleting table "{}"'.format(table))
+        db_session.execute(table.delete())
+    db_session.commit()

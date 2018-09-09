@@ -1,15 +1,46 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Text,
+    DateTime,
+    Table,
+    ForeignKey,
+)
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from service.database import Base
 
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True)
-    email = Column(String(120), unique=True)
+text_tag_association = Table('association', Base.metadata,
+    Column('text_id', Integer, ForeignKey('texts.text_id')),
+    Column('tag_id', Integer, ForeignKey('tags.tag_id'))
+)
 
-    def __init__(self, name=None, email=None):
-        self.name = name
-        self.email = email
+class Text(Base):
+    __tablename__ = 'texts'
+    text_id = Column(Integer, primary_key=True)
+    content = Column(Text(), unique=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    tags = relationship('Tag', secondary=text_tag_association)
+
+    def __init__(self, content=None):
+        self.content = content
 
     def __repr__(self):
-        return '<User %r>' % (self.name)
+        return '<Text %r>' % (self.content)
+
+class Tag(Base):
+    __tablename__ = 'tags'
+    tag_id = Column(Integer, primary_key=True)
+    content = Column(String(32), unique=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    def __init__(self, content=None):
+        self.content = content
+
+    def __repr__(self):
+        return '<Tag %r>' % (self.content)
+
+
