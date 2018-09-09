@@ -7,17 +7,18 @@ from flask_restful import (
     Api,
 )
 
-from .images import Image, Images
-from .texts import TextRes, TextsRes
-from .database import session as db, DB_PATH
-
-DEBUG = not True
+from service.images import Image, Images
+from service.texts import TextRes, TextsRes
+from service.database import session as db
+from service import config
 
 def get_app():
     app = Flask('memedata-service')
 
+    #configuration
+    app.config.update(config.flask_app_config)
+
     #db stuff
-    app.config['SQLALCHEMY_DATABASE_URI'] = DB_PATH 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         db.remove()
@@ -35,7 +36,7 @@ def get_api(app):
 def main():
     app = get_app()
     api = get_api(app)
-    app.run(debug=DEBUG)
+    app.run(debug=config.debug)
 
 if __name__ == '__main__':
     main()
