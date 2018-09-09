@@ -124,21 +124,21 @@ def dissimilarity(a, b):
     return ((a.flatten() - b.flatten())**2).mean()
 
 def test_image_get_correct_response_format_3(client, image_getter):
-    orig_img1 = np.fromstring(image_getter('red').read(), dtype='uint8')
+    orig_img1 = np.frombuffer(image_getter('red').read(), dtype='uint8')
     resp = client.post('/images', data={'image': image_getter('red')},
         content_type='multipart/form-data')
     uid1 = resp.json['image']['uid']
     resp = client.get('/images/{}'.format(uid1),
         headers={'accept': 'image/png'})
-    img1 = np.fromstring(resp.data, dtype='uint8')
+    img1 = np.frombuffer(resp.data, dtype='uint8')
 
-    orig_img2 = np.fromstring(image_getter('blue').read(), dtype='uint8')
+    orig_img2 = np.frombuffer(image_getter('blue').read(), dtype='uint8')
     resp = client.post('/images', data={'image': image_getter('blue')},
         content_type='multipart/form-data')
     uid2 = resp.json['image']['uid']
     resp = client.get('/images/{}'.format(uid2),
         headers={'accept': 'image/png'})
-    img2 = np.fromstring(resp.data, dtype='uint8')
+    img2 = np.frombuffer(resp.data, dtype='uint8')
 
     assert orig_img1.shape == img1.shape
     assert orig_img2.shape == img2.shape
@@ -188,9 +188,9 @@ def test_image_put_correct_response_fields_2(client, image_getter):
         content_type='multipart/form-data')
 
     resp = client.get('/images/{}'.format(uid), headers={'accept': 'image/png'})
-    red_img = np.fromstring(image_getter('red').read(), dtype='uint8')
-    blue_img = np.fromstring(image_getter('blue').read(), dtype='uint8')
-    img = np.fromstring(resp.data, dtype='uint8')
+    red_img = np.frombuffer(image_getter('red').read(), dtype='uint8')
+    blue_img = np.frombuffer(image_getter('blue').read(), dtype='uint8')
+    img = np.frombuffer(resp.data, dtype='uint8')
 
     assert dissimilarity(img, blue_img) < dissimilarity(img, red_img)
 
