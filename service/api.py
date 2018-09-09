@@ -11,12 +11,13 @@ from .images import Image, Images
 from .texts import Text, Texts
 from .database import db_session
 
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    db_session.remove()
-
 def get_app():
     app = Flask(__name__)
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
+
     return app
 
 def get_api(app):
