@@ -35,7 +35,7 @@ class TextSchema(ModelSchema):
     created_at = field_for(Text, 'created_at', dump_only=True)
     updated_at = field_for(Text, 'updated_at', dump_only=True)
     tags = Nested(TagSchema, many=True,
-        exclude=['created_at', 'updated_at', 'texts', 'tag_id'])
+        exclude=['created_at', 'updated_at', 'texts'])#, 'tag_id'])
 
     class Meta:
         unknown = EXCLUDE

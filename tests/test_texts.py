@@ -33,6 +33,76 @@ def test_texts_get_correct_elems(client):
     assert len([e for e in elems if e['content'] == ' SLIRBORA']) == 1
     assert len([e for e in elems if e['content'] == 'test  bcb']) == 1
 
+def test_texts_get_search_correct_elems_1(client):
+    client.post('/texts', data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
+
+    elems = client.get('/texts?any_tags=a').json['texts']
+    assert len(elems) == 3
+    elems = client.get('/texts?any_tags=a,b').json['texts']
+    assert len(elems) == 3
+    elems = client.get('/texts?any_tags=a,b,c').json['texts']
+    assert len(elems) == 3
+    elems = client.get('/texts?any_tags=y').json['texts']
+    assert len(elems) == 0
+
+def test_texts_get_search_correct_elems_2(client):
+    client.post('/texts', data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
+
+    elems = client.get('/texts?all_tags=a').json['texts']
+    assert len(elems) == 3
+    elems = client.get('/texts?all_tags=a,b').json['texts']
+    assert len(elems) == 2
+    elems = client.get('/texts?all_tags=a,b,c').json['texts']
+    assert len(elems) == 1
+    elems = client.get('/texts?all_tags=x').json['texts']
+    assert len(elems) == 0
+
+def test_texts_get_search_correct_elems_3(client):
+    client.post('/texts', data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
+
+    elems = client.get('/texts?all_tags=a&any_tags=a,b,c').json['texts']
+    assert len(elems) == 3
+    elems = client.get('/texts?all_tags=a,b&any_tags=a,b,c').json['texts']
+    assert len(elems) == 2
+    elems = client.get('/texts?all_tags=a,b,c&any_tags=a,b,c').json['texts']
+    assert len(elems) == 1
+    elems = client.get('/texts?all_tags=x&any_tags=a,b,c').json['texts']
+    assert len(elems) == 0
+
+def test_texts_get_search_correct_elems_4(client):
+    client.post('/texts', data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
+
+    elems = client.get('/texts?max_n_results=2').json['texts']
+    assert len(elems) == 2
+    elems = client.get('/texts?all_tags=a&max_n_results=2').json['texts']
+    assert len(elems) == 2
+    elems = client.get('/texts?all_tags=a&max_n_results=0').json['texts']
+    assert len(elems) == 0
+
+def test_texts_get_search_correct_elems_5(client):
+    """this test will fail in 2049."""
+    client.post('/texts', data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
+
+    elems = client.get('/texts?date_to=2049-12-20').json['texts']
+    assert len(elems) == 3
+    elems = client.get('/texts?date_to=2000-11-01').json['texts']
+    assert len(elems) == 0
+    elems = client.get('/texts?date_from=2000-01-01').json['texts']
+    assert len(elems) == 3
+    elems = client.get(
+        '/texts?date_from=2000-01-01&date_to=1994-03-24').json['texts']
+    assert len(elems) == 0
+
 def test_texts_post_data_correct_response_format(client):
     resp = client.post('/texts', data={'content': 'this is a test'})
 

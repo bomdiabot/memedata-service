@@ -46,4 +46,4 @@ class Tag(Base):
         self.content = content
 
     def __repr__(self):
-        return '<Tag %r>' % (self.content)
+        return '<Tag {} (id={})>'.format(self.content, self.tag_id)

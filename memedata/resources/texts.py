@@ -56,14 +56,15 @@ class TextRes(Resource):
         return '', 204
 
 def get_tags(contents):
-    tags = Tag.query.filter(Tag.content.in_(contents)).all()
-    found_contents = {t.content for t in tags}
-    not_found_contents = set(contents) - found_contents
-    new_tags = [Tag(c) for c in not_found_contents]
-    #adding new tags to database
-    db.session.add_all(new_tags)
+    #TODO: get a more performant solution for this
+    schema = TagSchema()
+    for content in contents:
+        tag1 = schema.load({'content': content})
+        tag2 = Tag.query.filter_by(content=tag1.content).first()
+        if tag2 is None:
+            db.session.add(tag1)
     db.session.commit()
-    tags.extend(new_tags)
+    tags = Tag.query.filter(Tag.content.in_(contents)).all()
     return tags
 
 def serialize_tags(tags):
@@ -136,6 +137,8 @@ class TextsRes(Resource):
                 func.DATE(Text.created_at) >= args['date_from'])
         if 'all_tags' in args:
             tags = Tag.query.filter(Tag.content.in_(args['all_tags'])).all()
+            if len(tags) < len(args['all_tags']):
+                return []
             #dirty hack TODO: get a better solution
             for t in tags:
                 query = query.filter(Text.tags.contains(t))
