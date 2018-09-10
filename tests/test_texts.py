@@ -84,7 +84,7 @@ def test_texts_post_correct_response_fields_3(client):
     assert obj['content'] == 'this is a test'
     assert obj['created_at']
     assert obj['updated_at'] is None
-    assert {t['content'] for t in obj['tags']} == {'ey', 'b0ss'}
+    assert set(obj['tags']) == {'ey', 'b0ss'}
 
 def test_texts_post_ignores_spurious_args(client):
     resp = client.post('/texts',

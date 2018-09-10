@@ -23,7 +23,8 @@ class Text(Base):
     content = Column(String(2049), unique=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    tags = relationship('Tag', secondary=text_tag_association)
+    tags = relationship(
+        'Tag', secondary=text_tag_association, back_populates='texts')
 
     def __init__(self, content='', tags=[]):
         self.content = content
@@ -38,6 +39,8 @@ class Tag(Base):
     content = Column(String(32), unique=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    texts = relationship(
+        'Text', secondary=text_tag_association, back_populates='tags')
 
     def __init__(self, content=None):
         self.content = content
