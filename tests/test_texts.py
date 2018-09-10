@@ -43,6 +43,7 @@ def test_texts_post_data_correct_response_format(client):
     assert 'content' in obj
     assert 'created_at' in obj
     assert 'updated_at' in obj
+    assert 'tags' in obj
 
 def test_texts_post_qstring_correct_response_format(client):
     resp = client.post('/texts?content=this is a test')
@@ -53,6 +54,7 @@ def test_texts_post_qstring_correct_response_format(client):
     assert 'content' in obj
     assert 'created_at' in obj
     assert 'updated_at' in obj
+    assert 'tags' in obj
 
 def test_texts_post_correct_response_fields_1(client):
     resp = client.post('/texts', data={'content': 'this is a test'})
@@ -74,6 +76,16 @@ def test_texts_post_correct_response_fields_2(client):
     assert obj2['created_at']
     assert obj1['created_at'] <= obj2['created_at']
 
+def test_texts_post_correct_response_fields_3(client):
+    resp = client.post('/texts',
+        data={'content': 'this is a test', 'tags': 'ey,b0ss'})
+    obj = resp.json['text']
+
+    assert obj['content'] == 'this is a test'
+    assert obj['created_at']
+    assert obj['updated_at'] is None
+    assert {t['content'] for t in obj['tags']} == {'ey', 'b0ss'}
+
 def test_texts_post_ignores_spurious_args(client):
     resp = client.post('/texts',
         data={'content': 'test 1', 'ow': 'hehe', 'ljh': 'hhh'})
@@ -81,8 +93,22 @@ def test_texts_post_ignores_spurious_args(client):
     assert resp.status_code == 201
     assert 'text' in resp.json
 
-def test_texts_post_correct_error_format(client):
+def test_texts_post_correct_error_format_1(client):
     resp = client.post('/texts', data={'wrong': 'keypair'})
+
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
+
+def test_texts_post_correct_error_format_2(client):
+    resp = client.post('/texts',
+            data={'content': 'correct', 'tags': 'right,invalid space'})
+
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
+
+def test_texts_post_correct_error_format_3(client):
+    resp = client.post('/texts',
+            data={'content': 'correct', 'tags': 'blacklisted,generated'})
 
     assert resp.status_code == 400
     assert set(resp.json.keys()) == {'errors'}
