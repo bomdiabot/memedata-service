@@ -20,7 +20,7 @@ text_tag_association = Table('association', Base.metadata,
 class Text(Base):
     __tablename__ = 'texts'
     text_id = Column(Integer, primary_key=True)
-    content = Column(Text(), unique=False)
+    content = Column(String(2049), unique=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     tags = relationship('Tag', secondary=text_tag_association)
