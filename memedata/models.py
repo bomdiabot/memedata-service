@@ -25,8 +25,9 @@ class Text(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     tags = relationship('Tag', secondary=text_tag_association)
 
-    def __init__(self, content=None):
+    def __init__(self, content='', tags=[]):
         self.content = content
+        self.tags = tags
 
     def __repr__(self):
         return '<Text %r>' % (self.content)

@@ -5,6 +5,8 @@ from marshmallow_sqlalchemy import (
 from marshmallow import (
     EXCLUDE,
     post_dump,
+    validates,
+    ValidationError,
 )
 from marshmallow.fields import Nested
 
@@ -20,6 +22,13 @@ class TagSchema(ModelSchema):
         unknown = EXCLUDE
         model = Tag
         sqla_session = db.session
+
+    @validates('content')
+    def validate_content(self, content):
+        if not content.isalnum():
+            raise ValidationError('"{}" must be alphanumeric'.format(content))
+        if not content.islower():
+            raise ValidationError('"{}" must be lower-case'.format(content))
 
 class TextSchema(ModelSchema):
     content = field_for(Text, 'content', required=True)
@@ -39,5 +48,3 @@ class TextSchema(ModelSchema):
     @post_dump(pass_many=True)
     def envelope(self, dct, many):
         return {TextSchema.get_envelope_key(many): dct}
-
-
