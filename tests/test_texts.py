@@ -103,6 +103,24 @@ def test_texts_get_search_correct_elems_5(client):
         '/texts?date_from=2000-01-01&date_to=1994-03-24').json['texts']
     assert len(elems) == 0
 
+def test_texts_get_search_correct_elems_6(client):
+    client.post('/texts', data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
+
+    elems = client.get('/texts',
+        data={'all_tags': 'a', 'any_tags': 'a,b,c'}).json['texts']
+    assert len(elems) == 3
+    elems = client.get('/texts',
+        data={'all_tags': 'a,b', 'any_tags': 'a,b,c'}).json['texts']
+    assert len(elems) == 2
+    elems = client.get('/texts',
+        data={'all_tags': 'a,b,c', 'any_tags': 'a,b,c'}).json['texts']
+    assert len(elems) == 1
+    elems = client.get('/texts',
+        data={'all_tags': 'x', 'any_tags': 'a,b,c'}).json['texts']
+    assert len(elems) == 0
+
 def test_texts_post_data_correct_response_format(client):
     resp = client.post('/texts', data={'content': 'this is a test'})
 
