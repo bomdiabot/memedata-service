@@ -28,11 +28,26 @@ def populate_tags(size):
         db.session.add_all(texts)
         db.session.commit()
 
+def sample(iterable, n):
+    return random.sample(iterable, min(n, len(iterable)))
+
+def assign_texts_tags(max_n_tags=10):
+    with get_app().app_context():
+        texts = Text.query.all()
+        tags = Tag.query.all()
+        for text in texts:
+            tags_ = sample(tags, random.randint(0, max_n_tags))
+            text.tags.extend(tags_)
+        db.session.add_all(texts)
+        db.session.commit()
+
 def main():
     print('populating texts...')
-    populate_texts(random.randint(500, 600))
+    populate_texts(random.randint(200, 300))
     print('populating tags...')
-    populate_tags(random.randint(100, 200))
+    populate_tags(random.randint(100, 150))
+    print('assigning tags to texts...')
+    assign_texts_tags()
     print('done')
 
 if __name__ == '__main__':
