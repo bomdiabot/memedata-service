@@ -1,18 +1,23 @@
 import pytest
-from service.api import get_app, get_api
-from service import texts, images
-from service.database import drop_all
+from memedata.app import get_app
+from memedata.resources import images
+from memedata.config import TestConfig
+from memedata.database import db
 
 from io import BytesIO
 from PIL import Image
 
 @pytest.fixture()
-def app_api():
-    app = get_app()
-    api = get_api(app)
-    app.debug = True
-    app.testing = True
-    yield app, api
+def app():
+    #setup
+    app = get_app(TestConfig)
+    with app.app_context():
+        db.create_all()
+    yield app
+    #teardown
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()
 
 @pytest.fixture()
 def image_getter():
@@ -26,11 +31,7 @@ def image_getter():
     return image_getter_color
 
 @pytest.fixture()
-def client(app_api):
-    #setup
-    app, api = app_api
-    drop_all()
-
+def client(app):
     with app.test_client() as c:
         yield c
 

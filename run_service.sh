@@ -1,3 +1,3 @@
 #!/bin/bash
 
-PYTHONPATH=$(pwd) python3 -m service.api $@
+FLASK_APP=memedata.app:get_app flask run $@

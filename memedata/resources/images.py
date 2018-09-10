@@ -16,7 +16,7 @@ from marshmallow import (
     EXCLUDE,
 )
 
-from service.util import (
+from memedata.util import (
     mk_errors,
     fmt_validation_error_messages,
 )
@@ -69,7 +69,7 @@ def _get_path(uid, mimetype):
 def _exists(uid):
     return uid in DB.keys()
 
-class Image(Resource):
+class ImageRes(Resource):
     def get(self, uid):
         if not _exists(uid):
             return mk_errors(404, '{} does not exist'.format(uid))
@@ -115,7 +115,7 @@ class Image(Resource):
         del DB[uid]
         return '', 204
 
-class Images(Resource):
+class ImagesRes(Resource):
     def post(self):
         data = request.files.get('image')
         if data is None:

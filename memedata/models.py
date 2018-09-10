@@ -1,15 +1,16 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Text,
-    DateTime,
-    Table,
-    ForeignKey,
-)
-from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
-from service.database import Base, engine
+from memedata.database import db
+
+Column = db.Column
+Integer = db.Integer
+String = db.String
+Text = db.Text
+DateTime = db.DateTime
+Table = db.Table
+ForeignKey = db.ForeignKey
+func = db.func
+relationship = db.relationship
+Base = db.Model
+Table = db.Table
 
 text_tag_association = Table('association', Base.metadata,
     Column('text_id', Integer, ForeignKey('texts.text_id')),
@@ -42,5 +43,3 @@ class Tag(Base):
 
     def __repr__(self):
         return '<Tag %r>' % (self.content)
-
-Base.metadata.create_all(bind=engine)
