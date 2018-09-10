@@ -1,11 +1,9 @@
 app_name = 'memedata-memedata'
 
-debug = True
-
 db_path = 'sqlite:////tmp/test.db'
 
 class BaseConfig:
-    DEBUG = debug
+    DEBUG = True
     SECRET_KEY = 'aylmao'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

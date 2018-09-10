@@ -19,7 +19,7 @@ def register_extensions(app):
 
 def main():
     app = get_app()
-    app.run(debug=config.debug)
+    app.run()
 
 if __name__ == '__main__':
     main()

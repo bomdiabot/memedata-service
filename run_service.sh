@@ -1,3 +1,5 @@
 #!/bin/bash
 
-FLASK_APP=memedata.app:get_app flask run $@
+export FLASK_APP=memedata.app:get_app
+export FLASK_ENV=development
+flask run $@
