@@ -20,7 +20,7 @@ text_tag_association = Table('association', Base.metadata,
 class Text(Base):
     __tablename__ = 'texts'
     text_id = Column(Integer, primary_key=True)
-    content = Column(String(2049), unique=False)
+    content = Column(String(2049), unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     tags = relationship(
@@ -36,7 +36,7 @@ class Text(Base):
 class Tag(Base):
     __tablename__ = 'tags'
     tag_id = Column(Integer, primary_key=True)
-    content = Column(String(32), unique=False)
+    content = Column(String(32), unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     texts = relationship(
@@ -47,3 +47,34 @@ class Tag(Base):
 
     def __repr__(self):
         return '<Tag {} (id={})>'.format(self.content, self.tag_id)
+
+class User(Base):
+    __tablename__ = 'users'
+    user_id = Column(Integer, primary_key=True)
+    username = Column(String(128), unique=True, nullable=False)
+    password = Column(String(128), nullable=False)
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def to_json(self):
+        return {
+            'user_id': self.user_id,
+            'username': str(self.username),
+            'password': str(self.password),
+        }
+
+class RevokedToken(Base):
+    __tablename__ = 'revoked_tokens'
+    revoked_token_id = Column(Integer, primary_key=True)
+    jti = Column(String(120))
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    @classmethod
+    def is_jti_blacklisted(cls, jti):
+        query = cls.query.filter_by(jti=jti).first()
+        return query is not None

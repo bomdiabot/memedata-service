@@ -2,7 +2,7 @@
 
 from flask import Flask
 
-from memedata.extensions import db, api
+from memedata.extensions import db, api, jwt
 from memedata import config
 from memedata.util import mk_errors
 
@@ -18,16 +18,23 @@ def get_app(config_obj=config.DevConfig):
 
 def register_extensions(app):
     db.init_app(app)
+    jwt.init_app(app)
     api.init_app(app)
 
 def register_error_handlers(app):
     def error_handler(error):
         code = getattr(error, 'status_code', 500)
         try:
-            message = getattr(error, 'message', str(error)[:1024])
+            if config.debug:
+                messages = [str(error)[:1024]]
+            else:
+                try:
+                    messages = error.messages
+                except:
+                    messages = [error.message]
         except:
-            message = 'something went wrong!'
-        return mk_errors(code, message)
+            messages = ['something went wrong!']
+        return mk_errors(code, messages)
     app.errorhandler(Exception)(error_handler)
 
 def main():

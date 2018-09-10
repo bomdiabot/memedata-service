@@ -1,10 +1,15 @@
 app_name = 'memedata-memedata'
 
+debug = True
+
 db_path = 'sqlite:////tmp/test.db'
 
 class BaseConfig:
-    DEBUG = True
+    DEBUG = debug
     SECRET_KEY = 'aylmao'
+    JWT_SECRET_KEY = 'eyb0ss'
+    JWT_BLACKLIST_ENABLED = True
+    JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class ProdConfig(BaseConfig):

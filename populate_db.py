@@ -18,6 +18,10 @@ def get_rand_str(maxsize=16):
 def get_tag():
     return Tag(get_rand_str(16))
 
+def get_tags(size):
+    tags = {get_rand_str(16) for __ in range(size)}
+    return [Tag(t) for t in tags]
+
 def get_text():
     return Text(get_rand_str(64))
 
@@ -37,9 +41,9 @@ def populate_texts_with_sentences():
             db.session.commit()
 
 def populate_tags(size):
-    texts = [get_tag() for __ in range(size)]
+    tags = get_tags(size)
     with get_app().app_context():
-        db.session.add_all(texts)
+        db.session.add_all(tags)
         db.session.commit()
 
 def sample(iterable, n):

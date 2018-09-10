@@ -26,24 +26,27 @@ def to_list(elem):
         elem = [elem]
     return elem
 
-def mk_error(message_or_error, code=None):
-    error = {}
+def mk_message(message_or_error, code=None):
+    message = {}
     if isinstance(message_or_error, dict):
-        error['message'] = str(message_or_error['message'])
+        message['message'] = str(message_or_error['message'])
         if 'code' in message_or_error.keys():
-            error['code'] = int(message_or_error['code'])
+            message['code'] = int(message_or_error['code'])
     elif isinstance(message_or_error, tuple):
         message, code = message_or_error
-        error = {'message': str(message), 'code': int(code)}
+        message = {'message': str(message), 'code': int(code)}
     else:
-        error['message'] = str(message_or_error)
+        message['message'] = str(message_or_error)
     if code is not None:
-        error['code'] = int(code)
-    return error
+        message['code'] = int(code)
+    return message
+
+def mk_error(*args, **kwargs):
+    return mk_message(*args, **kwargs)
 
 def mk_errors(code, messages_or_errors, as_response=True):
     messages_or_errors = to_list(messages_or_errors)
-    errors = [mk_error(me) for me in messages_or_errors]
+    errors = [mk_message(me) for me in messages_or_errors]
     if as_response:
         return make_response(jsonify({'errors': errors}), code)
     else:
