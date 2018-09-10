@@ -5,6 +5,11 @@ from memedata.database import db
 from memedata.models import Text, Tag
 import uuid
 import random
+import os
+
+SENTENCES_FILES = [
+    os.path.join('data', 'sentences.txt'),
+]
 
 def get_rand_str(maxsize=16):
     size = random.randint(0, 10000) % maxsize
@@ -21,6 +26,15 @@ def populate_texts(size):
     with get_app().app_context():
         db.session.add_all(texts)
         db.session.commit()
+
+def populate_texts_with_sentences():
+    for path in SENTENCES_FILES:
+        with open(path) as f:
+            lines = [l.strip() for l in f]
+        texts = [Text(l) for l in lines if l]
+        with get_app().app_context():
+            db.session.add_all(texts)
+            db.session.commit()
 
 def populate_tags(size):
     texts = [get_tag() for __ in range(size)]
@@ -43,7 +57,8 @@ def assign_texts_tags(max_n_tags=10):
 
 def main():
     print('populating texts...')
-    populate_texts(random.randint(200, 300))
+    populate_texts_with_sentences()
+    populate_texts(random.randint(50, 100))
     print('populating tags...')
     populate_tags(random.randint(100, 150))
     print('assigning tags to texts...')

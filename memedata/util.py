@@ -3,6 +3,21 @@ from flask import (
     jsonify,
 )
 
+def _filter_fields(objs, fields):
+    fields = set(fields)
+    if not isinstance(objs, list):
+        return {k: v for k, v in objs.items() if k in fields}
+    return [{k: v for k, v in obj.items() if k in fields} for obj in objs]
+
+def filter_fields(objs, fields=None, enveloped=True):
+    if fields is None:
+        return objs
+    if enveloped:
+        assert len(objs.keys()) == 1, 'envelope should contain only 1 key'
+        key = next(iter(objs.keys()))
+        return {key: _filter_fields(objs[key], fields)}
+    return _filter_fields(objs, fields)
+
 def flatten(lsts):
     return [item for sublst in lsts for item in sublst]
 

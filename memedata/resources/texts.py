@@ -24,9 +24,18 @@ from sqlalchemy import func
 from memedata.models import Text, Tag
 from memedata.serializers import TextSchema, TagSchema
 from memedata.database import db
-from memedata.util import mk_errors, fmt_validation_error_messages, flatten
+from memedata.util import (
+    mk_errors,
+    fmt_validation_error_messages,
+    flatten,
+    filter_fields,
+)
 
 class TextRes(Resource):
+    GET_ARGS = {
+        'fields': DelimitedList(Str()),
+    }
+
     @staticmethod
     def get_text(uid):
         text = Text.query.get(uid)
@@ -34,9 +43,19 @@ class TextRes(Resource):
             abort(mk_errors(404, '{} doest not exist'.format(uid)))
         return text
 
+    @staticmethod
+    def parse_get_args(req):
+        args = parser.parse(TextRes.GET_ARGS, req)
+        return args
+
     def get(self, uid):
         text = TextRes.get_text(uid)
-        return TextSchema().dump(text)
+        try:
+            args = TextRes.parse_get_args(request)
+        except ValidationError as e:
+            return mk_errors(400, fmt_validation_error_messages(e.messages))
+        obj = TextSchema().dump(text)
+        return filter_fields(obj, args.get('fields'))
 
     def put(self, uid):
         text = TextRes.get_text(uid)
@@ -104,6 +123,7 @@ class TextsRes(Resource):
         'date_to': Date(),
         'max_n_results': \
             Integer(validate=lambda n: n >= 0, missing=GET_MAX_N_RESULTS),
+        'fields': DelimitedList(Str()),
     }
 
     @staticmethod
@@ -118,12 +138,6 @@ class TextsRes(Resource):
                     raise ValidationError(
                         '"{}" is blacklisted'.format(tag))
             args['tags'] = serialize_tags(get_tags(args['tags']))
-        return args
-
-    @staticmethod
-    def parse_get_args(req):
-        args = parser.parse(TextsRes.GET_ARGS, req)
-        TextsRes.filter_texts(args)
         return args
 
     @staticmethod
@@ -149,6 +163,11 @@ class TextsRes(Resource):
         texts = query.limit(args['max_n_results']).all()
         return texts
 
+    @staticmethod
+    def parse_get_args(req):
+        args = parser.parse(TextsRes.GET_ARGS, req)
+        return args
+
     def post(self):
         try:
             args = TextsRes.parse_post_args(request)
@@ -165,4 +184,5 @@ class TextsRes(Resource):
         except ValidationError as e:
             return mk_errors(400, fmt_validation_error_messages(e.messages))
         texts = TextsRes.filter_texts(args)
-        return TextSchema(many=True).dump(texts)
+        objs = TextSchema(many=True).dump(texts)
+        return filter_fields(objs, args.get('fields'))

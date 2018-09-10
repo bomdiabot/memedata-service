@@ -1,8 +1,25 @@
-def test_texts_get_correct_response_format(client):
+def test_texts_get_correct_response_format_1(client):
     resp = client.get('/texts')
     assert resp.status_code == 200
     assert 'texts' in resp.json
     assert resp.json['texts'] == []
+
+def test_texts_get_correct_response_format_2(client):
+    client.post('/texts', data={'content': 'test1'})
+    client.post('/texts', data={'content': 'test3'})
+    resp = client.get('/texts?fields=content,tags')
+    assert 'texts' in resp.json
+    assert all(set(o.keys()) == {'content', 'tags'} for o in resp.json['texts'])
+
+def test_texts_get_correct_response_format_3(client):
+    client.post('/texts', data={'content': 'test1'})
+    client.post('/texts', data={'content': 'test3'})
+    resp = client.get('/texts', data={'fields': 'text_id'})
+    assert 'texts' in resp.json
+    assert all(set(o.keys()) == {'text_id'} for o in resp.json['texts'])
+    resp = client.get('/texts?fields=')
+    assert 'texts' in resp.json
+    assert all(len(o.keys()) == 0 for o in resp.json['texts'])
 
 def test_texts_get_correct_number_elems(client):
     obj = client.get('/texts').json
@@ -201,7 +218,7 @@ def test_texts_post_correct_error_format_3(client):
     assert resp.status_code == 400
     assert set(resp.json.keys()) == {'errors'}
 
-def test_text_get_correct_response_format(client):
+def test_text_get_correct_response_format_1(client):
     resp = client.post('/texts?content=eyb0ss')
     text_id = resp.json['text']['text_id']
     resp = client.get('/texts/{}'.format(text_id))
@@ -213,6 +230,13 @@ def test_text_get_correct_response_format(client):
     assert 'content' in obj
     assert 'created_at' in obj
     assert 'updated_at' in obj
+
+def test_text_get_correct_response_format_2(client):
+    resp = client.post('/texts', data={'content': 'test1', 'tags': 'lel,hue'})
+    text_id = resp.json['text']['text_id']
+    resp = client.get('/texts/{}'.format(text_id),
+        data={'fields': 'text_id,tags'})
+    assert set(resp.json['text'].keys()) == {'text_id', 'tags'}
 
 def test_text_get_correct_response_fields(client):
     resp = client.post('/texts?content=eyb0ss')
