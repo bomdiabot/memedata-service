@@ -129,6 +129,7 @@ class TextsRes(Resource):
     GET_ARGS = {
         'any_tags': DelimitedList(Str()),
         'all_tags': DelimitedList(Str()),
+        'no_tags': DelimitedList(Str()),
         'date_from': Date(),
         'date_to': Date(),
         'max_n_results': \
@@ -171,9 +172,11 @@ class TextsRes(Resource):
                 Tag.query.join(Text, Tag.texts).filter(
                     Tag.content.in_(args['any_tags'])))
         if 'no_tags' in args:
-            query = query.join(Tag, Text.tags).join(
-                Tag.query.join(Text, Tag.texts).filter(
-                    ~Tag.content.in_(args['no_tags'])))
+            tags = Tag.query.filter(Tag.content.in_(args['no_tags'])).all()
+            #new dirty hack TODO: get a better solution
+            for t in tags:
+                query = query.filter(~Text.tags.contains(t))
+
         texts = query.limit(args['max_n_results']).all()
         return texts
 

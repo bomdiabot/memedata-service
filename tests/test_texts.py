@@ -121,7 +121,8 @@ def test_texts_get_search_correct_elems_5(client_with_tok):
     assert len(elems) == 0
 
 def test_texts_get_search_correct_elems_6(client_with_tok):
-    client_with_tok.post('/texts', data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts',
+        data={'content': 'test aaa', 'tags': 'a,b,c'})
     client_with_tok.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
     client_with_tok.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
 
@@ -137,6 +138,23 @@ def test_texts_get_search_correct_elems_6(client_with_tok):
     elems = client_with_tok.get('/texts',
         data={'all_tags': 'x', 'any_tags': 'a,b,c'}).json['texts']
     assert len(elems) == 0
+
+def test_texts_get_search_correct_elems_7(client_with_tok):
+    client_with_tok.post('/texts',
+        data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client_with_tok.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
+
+    elems1 = client_with_tok.get('/texts',
+        data={'no_tags': 'b,c'}).json['texts']
+    elems3 = client_with_tok.get('/texts',
+        data={'no_tags': 'a'}).json['texts']
+    elems2 = client_with_tok.get('/texts',
+        data={'any_tags': 'a', 'no_tags': 'a'}).json['texts']
+    assert len(elems1) == 1
+    assert elems1[0]['tags'] == ['a']
+    assert len(elems2) == 0
+    assert len(elems3) == 0
 
 def test_texts_get_cannot_get_logged_of(client):
     resp = client.get('/texts')
