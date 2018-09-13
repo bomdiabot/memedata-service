@@ -10,7 +10,9 @@ from flask_restful import (
 from marshmallow import (
     ValidationError,
 )
-
+from flask_jwt_extended import (
+    jwt_required,
+)
 from webargs.fields import (
     DelimitedList,
     Date,
@@ -48,6 +50,7 @@ class TextRes(Resource):
         args = parser.parse(TextRes.GET_ARGS, req)
         return args
 
+    @jwt_required
     def get(self, uid):
         text = TextRes.get_text(uid)
         try:
@@ -57,6 +60,7 @@ class TextRes(Resource):
         obj = TextSchema().dump(text)
         return filter_fields(obj, args.get('fields'))
 
+    @jwt_required
     def put(self, uid):
         text = TextRes.get_text(uid)
         try:
@@ -68,6 +72,7 @@ class TextRes(Resource):
         db.session.commit()
         return schema.dump(text)
 
+    @jwt_required
     def delete(self, uid):
         text = TextRes.get_text(uid)
         db.session.delete(text)
@@ -168,6 +173,7 @@ class TextsRes(Resource):
         args = parser.parse(TextsRes.GET_ARGS, req)
         return args
 
+    @jwt_required
     def post(self):
         try:
             args = TextsRes.parse_post_args(request)
@@ -178,6 +184,7 @@ class TextsRes(Resource):
         db.session.commit()
         return TextSchema().dump(text), 201
 
+    @jwt_required
     def get(self):
         try:
             args = TextsRes.parse_get_args(request)
