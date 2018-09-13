@@ -4,6 +4,10 @@ debug = True
 
 db_path = 'sqlite:////tmp/test.db'
 
+#ignore auth requirements
+#NEVER user it in prod or during tests
+ignore_jwt = True
+
 class BaseConfig:
     DEBUG = debug
     SECRET_KEY = 'aylmao'

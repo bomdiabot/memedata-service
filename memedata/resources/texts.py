@@ -32,6 +32,11 @@ from memedata.util import (
     flatten,
     filter_fields,
 )
+from memedata import config
+
+if config.ignore_jwt:
+    #dummy decorator
+    jwt_required = lambda x: x
 
 class TextRes(Resource):
     GET_ARGS = {
@@ -165,6 +170,10 @@ class TextsRes(Resource):
             query = query.join(Tag, Text.tags).join(
                 Tag.query.join(Text, Tag.texts).filter(
                     Tag.content.in_(args['any_tags'])))
+        if 'no_tags' in args:
+            query = query.join(Tag, Text.tags).join(
+                Tag.query.join(Text, Tag.texts).filter(
+                    ~Tag.content.in_(args['no_tags'])))
         texts = query.limit(args['max_n_results']).all()
         return texts
 
