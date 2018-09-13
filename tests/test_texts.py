@@ -156,6 +156,38 @@ def test_texts_get_search_correct_elems_7(client_with_tok):
     assert len(elems2) == 0
     assert len(elems3) == 0
 
+def test_texts_correct_pagination_1(client_with_tok):
+    client_with_tok.post('/texts',
+        data={'content': 'test aaa', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts',
+        data={'content': 'test bbb', 'tags': 'x'})
+    client_with_tok.post('/texts',
+        data={'content': 'test ccc', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts',
+        data={'content': 'test ddd'})
+
+    obj1 = client_with_tok.get('/texts?max_n_results=4').json
+    obj2 = client_with_tok.get('/texts?max_n_results=3').json
+    assert obj1['offset'] is None
+    assert obj2['offset'] == 3
+
+def test_texts_correct_pagination_2(client_with_tok):
+    client_with_tok.post('/texts',
+        data={'content': 'aa', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts',
+        data={'content': 'bb', 'tags': 'x'})
+    client_with_tok.post('/texts',
+        data={'content': 'cc', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts',
+        data={'content': 'dd'})
+
+    obj1 = client_with_tok.get('/texts?max_n_results=2').json
+    obj2 = client_with_tok.get('/texts?offset=2').json
+    assert obj1['offset'] == 2
+    assert {o['content'] for o in obj1['texts']} == {'aa', 'bb'}
+    assert obj2['offset'] == None
+    assert {o['content'] for o in obj2['texts']} == {'cc', 'dd'}
+
 def test_texts_get_cannot_get_logged_of(client):
     resp = client.get('/texts')
     assert resp.status_code == 401

@@ -134,6 +134,8 @@ class TextsRes(Resource):
         'date_to': Date(),
         'max_n_results': \
             Integer(validate=lambda n: n >= 0, missing=GET_MAX_N_RESULTS),
+        'offset': \
+            Integer(validate=lambda n: n >= 0, missing=0),
         'fields': DelimitedList(Str()),
     }
 
@@ -163,7 +165,7 @@ class TextsRes(Resource):
         if 'all_tags' in args:
             tags = Tag.query.filter(Tag.content.in_(args['all_tags'])).all()
             if len(tags) < len(args['all_tags']):
-                return []
+                return [], None
             #dirty hack TODO: get a better solution
             for t in tags:
                 query = query.filter(Text.tags.contains(t))
@@ -177,8 +179,14 @@ class TextsRes(Resource):
             for t in tags:
                 query = query.filter(~Text.tags.contains(t))
 
+        query = query.offset(args['offset'])
+        if query.count() <= args['max_n_results']:
+            offset = None
+        else:
+            offset = args['offset'] + args['max_n_results']
         texts = query.limit(args['max_n_results']).all()
-        return texts
+
+        return texts, offset
 
     @staticmethod
     def parse_get_args(req):
@@ -202,6 +210,8 @@ class TextsRes(Resource):
             args = TextsRes.parse_get_args(request)
         except ValidationError as e:
             return mk_errors(400, fmt_validation_error_messages(e.messages))
-        texts = TextsRes.filter_texts(args)
+        texts, offset = TextsRes.filter_texts(args)
         objs = TextSchema(many=True).dump(texts)
-        return filter_fields(objs, args.get('fields'))
+        objs = filter_fields(objs, args.get('fields'))
+        objs['offset'] = offset
+        return objs
