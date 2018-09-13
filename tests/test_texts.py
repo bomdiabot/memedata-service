@@ -138,6 +138,10 @@ def test_texts_get_search_correct_elems_6(client_with_tok):
         data={'all_tags': 'x', 'any_tags': 'a,b,c'}).json['texts']
     assert len(elems) == 0
 
+def test_texts_get_cannot_get_logged_of(client):
+    resp = client.get('/texts')
+    assert resp.status_code == 401
+
 def test_texts_post_data_correct_response_format(client_with_tok):
     resp = client_with_tok.post('/texts', data={'content': 'this is a test'})
 
@@ -218,6 +222,10 @@ def test_texts_post_correct_error_format_3(client_with_tok):
     assert resp.status_code == 400
     assert set(resp.json.keys()) == {'errors'}
 
+def test_texts_post_cannot_post_logged_of(client):
+    resp = client.post('/texts?content=this is a test')
+    assert resp.status_code == 401
+
 def test_text_get_correct_response_format_1(client_with_tok):
     resp = client_with_tok.post('/texts?content=eyb0ss')
     text_id = resp.json['text']['text_id']
@@ -252,6 +260,11 @@ def test_text_get_correct_error_format(client_with_tok):
     resp = client_with_tok.get('/texts/1')
     assert resp.status_code == 404
     assert set(resp.json.keys()) == {'errors'}
+
+def test_text_get_cannot_get_logged_of(client_with_tok, client):
+    resp1 = client_with_tok.post('/texts?content=eyb0ss')
+    resp2 = client.get('/texts/{}'.format(resp1.json['text']['text_id']))
+    assert resp2.status_code == 401
 
 def test_text_put_correct_response_format(client_with_tok):
     obj = client_with_tok.post('/texts?content=eyb0ss').json['text']
@@ -294,9 +307,14 @@ def test_text_put_correct_response_fields(client_with_tok):
 
 def test_text_put_correct_error_format_1(client_with_tok):
     resp = client_with_tok.put('/texts/3')
-
     assert resp.status_code == 404
     assert set(resp.json.keys()) == {'errors'}
+
+def test_text_put_cannot_put_logged_of(client_with_tok, client):
+    resp1 = client_with_tok.post('/texts?content=eyb0ss')
+    resp2 = client.put('/texts/{}?content=updated'.format(
+        resp1.json['text']['text_id']))
+    assert resp2.status_code == 401
 
 def test_text_delete_correct_response_format(client_with_tok):
     obj = client_with_tok.post('/texts?content=eyb0ss').json['text']
@@ -327,3 +345,8 @@ def test_text_delete_correct_error_format(client_with_tok):
     resp = client_with_tok.delete('/texts/3')
     assert resp.status_code == 404
     assert set(resp.json.keys()) == {'errors'}
+
+def test_text_delete_cannot_delete_logged_of(client_with_tok, client):
+    resp1 = client_with_tok.post('/texts?content=eyb0ss')
+    resp2 = client.delete('/texts/{}'.format(resp1.json['text']['text_id']))
+    assert resp2.status_code == 401
