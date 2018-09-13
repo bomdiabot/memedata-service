@@ -34,7 +34,7 @@ from memedata.util import (
 )
 from memedata import config
 
-if config.ignore_jwt:
+if config.ignore_jwt_texts:
     #dummy decorator
     jwt_required = lambda x: x
 

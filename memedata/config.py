@@ -6,7 +6,9 @@ db_path = 'sqlite:////tmp/test.db'
 
 #ignore auth requirements
 #NEVER user it in prod or during tests
-ignore_jwt = not True
+ignore_jwt_texts = not True
+ignore_jwt_images = False
+ignore_jwt_auth = False
 
 class BaseConfig:
     DEBUG = debug
