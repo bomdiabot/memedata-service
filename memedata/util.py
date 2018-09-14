@@ -3,6 +3,14 @@ from flask import (
     jsonify,
 )
 
+from passlib.hash import pbkdf2_sha256 as sha256
+
+def generate_hash(password):
+    return sha256.hash(password)
+
+def verify_hash(password, hsh):
+    return sha256.verify(password, hsh)
+
 def _filter_fields(objs, fields):
     fields = set(fields)
     if not isinstance(objs, list):

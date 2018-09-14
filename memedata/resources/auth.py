@@ -26,24 +26,20 @@ from memedata.util import (
     fmt_validation_error_messages,
     flatten,
     filter_fields,
+    generate_hash,
+    verify_hash,
 )
 
 from memedata.models import User, RevokedToken
 from memedata.database import db
 from memedata.extensions import jwt
-
-from passlib.hash import pbkdf2_sha256 as sha256
+from memedata import config
 
 _USER_PASS_ARGS = {
     'username': Str(required=True),
-    'password': Str(validate=validate.Length(min=8), required=True),
+    'password': Str(
+        validate=validate.Length(min=config.min_password_len), required=True),
 }
-
-def generate_hash(password):
-    return sha256.hash(password)
-
-def verify_hash(password, hsh):
-    return sha256.verify(password, hsh)
 
 class Login(Resource):
     def post(self):
@@ -91,11 +87,7 @@ class UsersRes(Resource):
         if User.query.filter_by(username=args['username']).first():
             return mk_errors(
                 400, 'username "{}" already taken'.format(args['username']))
-        new_user = User(
-            username=args['username'],
-            password=generate_hash(args['password'])
-        )
-        new_user.save()
+        new_user = User.create_and_save(args['username'], args['password'])
 
         access_tok = create_access_token(identity=args['username'])
         refresh_tok = create_refresh_token(identity=args['username'])

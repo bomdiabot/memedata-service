@@ -10,6 +10,8 @@ ignore_jwt_texts = not True
 ignore_jwt_images = False
 ignore_jwt_auth = False
 
+min_password_len = 8
+
 class BaseConfig:
     DEBUG = debug
     SECRET_KEY = 'aylmao'

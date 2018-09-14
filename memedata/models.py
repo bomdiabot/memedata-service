@@ -1,4 +1,5 @@
 from memedata.database import db
+from memedata.util import generate_hash
 
 Column = db.Column
 Integer = db.Integer
@@ -64,6 +65,13 @@ class User(Base):
             'username': str(self.username),
             'password': str(self.password),
         }
+
+    @staticmethod
+    def create_and_save(username, plain_password):
+        new_user = User(username=username,
+            password=generate_hash(plain_password))
+        new_user.save()
+        return new_user
 
 class RevokedToken(Base):
     __tablename__ = 'revoked_tokens'
