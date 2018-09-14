@@ -124,7 +124,7 @@ class TextsRes(Resource):
         'captioned',
     }
 
-    GET_MAX_N_RESULTS = 100
+    GET_MAX_N_RESULTS = 1000
 
     GET_ARGS = {
         'any_tags': DelimitedList(Str()),
@@ -155,7 +155,8 @@ class TextsRes(Resource):
 
     @staticmethod
     def filter_texts(args):
-        query = Text.query
+        #sorting in decreasing order by creation time
+        query = Text.query.order_by(-Text.created_at)
         if 'date_to' in args:
             query = query.filter(
                 func.DATE(Text.created_at) <= args['date_to'])
