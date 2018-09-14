@@ -52,7 +52,8 @@ class TextRes(Resource):
 
     @staticmethod
     def parse_get_args(req):
-        args = parser.parse(TextRes.GET_ARGS, req)
+        args = parser.parse(
+            TextRes.GET_ARGS, req, locations=('querystring', ))
         return args
 
     @jwt_required
@@ -191,7 +192,8 @@ class TextsRes(Resource):
 
     @staticmethod
     def parse_get_args(req):
-        args = parser.parse(TextsRes.GET_ARGS, req)
+        args = parser.parse(
+            TextsRes.GET_ARGS, req, locations=('querystring', ))
         return args
 
     @jwt_required

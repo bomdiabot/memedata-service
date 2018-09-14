@@ -14,7 +14,7 @@ def test_texts_get_correct_response_format_2(client_with_tok):
 def test_texts_get_correct_response_format_3(client_with_tok):
     client_with_tok.post('/texts', data={'content': 'test1'})
     client_with_tok.post('/texts', data={'content': 'test3'})
-    resp = client_with_tok.get('/texts', data={'fields': 'text_id'})
+    resp = client_with_tok.get('/texts', query_string={'fields': 'text_id'})
     assert 'texts' in resp.json
     assert all(set(o.keys()) == {'text_id'} for o in resp.json['texts'])
     resp = client_with_tok.get('/texts?fields=')
@@ -127,34 +127,47 @@ def test_texts_get_search_correct_elems_6(client_with_tok):
     client_with_tok.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
 
     elems = client_with_tok.get('/texts',
-        data={'all_tags': 'a', 'any_tags': 'a,b,c'}).json['texts']
+        query_string={'all_tags': 'a', 'any_tags': 'a,b,c'}).json['texts']
     assert len(elems) == 3
     elems = client_with_tok.get('/texts',
-        data={'all_tags': 'a,b', 'any_tags': 'a,b,c'}).json['texts']
+        query_string={'all_tags': 'a,b', 'any_tags': 'a,b,c'}).json['texts']
     assert len(elems) == 2
     elems = client_with_tok.get('/texts',
-        data={'all_tags': 'a,b,c', 'any_tags': 'a,b,c'}).json['texts']
+        query_string={'all_tags': 'a,b,c', 'any_tags': 'a,b,c'}).json['texts']
     assert len(elems) == 1
     elems = client_with_tok.get('/texts',
-        data={'all_tags': 'x', 'any_tags': 'a,b,c'}).json['texts']
+        query_string={'all_tags': 'x', 'any_tags': 'a,b,c'}).json['texts']
     assert len(elems) == 0
 
 def test_texts_get_search_correct_elems_7(client_with_tok):
     client_with_tok.post('/texts',
-        data={'content': 'test aaa', 'tags': 'a,b,c'})
-    client_with_tok.post('/texts', data={'content': 'SLIRBORA', 'tags': 'a,b'})
-    client_with_tok.post('/texts', data={'content': 'test  bcb', 'tags': 'a'})
-
+        query_string={'content': 'test aaa', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts',
+        query_string={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client_with_tok.post('/texts',
+        query_string={'content': 'test  bcb', 'tags': 'a'})
     elems1 = client_with_tok.get('/texts',
-        data={'no_tags': 'b,c'}).json['texts']
+        query_string={'no_tags': 'b,c'}).json['texts']
     elems3 = client_with_tok.get('/texts',
-        data={'no_tags': 'a'}).json['texts']
+        query_string={'no_tags': 'a'}).json['texts']
     elems2 = client_with_tok.get('/texts',
-        data={'any_tags': 'a', 'no_tags': 'a'}).json['texts']
+        query_string={'any_tags': 'a', 'no_tags': 'a'}).json['texts']
+
     assert len(elems1) == 1
     assert elems1[0]['tags'] == ['a']
     assert len(elems2) == 0
     assert len(elems3) == 0
+
+def test_texts_get_ignores_form(client_with_tok):
+    client_with_tok.post('/texts',
+        query_string={'content': 'test aaa', 'tags': 'a,b,c'})
+    client_with_tok.post('/texts',
+        query_string={'content': 'SLIRBORA', 'tags': 'a,b'})
+    client_with_tok.post('/texts',
+        query_string={'content': 'test  bcb', 'tags': 'a'})
+    resp = client_with_tok.get('/texts',
+        data={'no_tags': 'a'})
+    assert len(resp.json['texts']) == 3
 
 def test_texts_correct_pagination_1(client_with_tok):
     client_with_tok.post('/texts',
@@ -290,11 +303,20 @@ def test_text_get_correct_response_format_1(client_with_tok):
     assert 'updated_at' in obj
 
 def test_text_get_correct_response_format_2(client_with_tok):
-    resp = client_with_tok.post('/texts', data={'content': 'test1', 'tags': 'lel,hue'})
+    resp = client_with_tok.post('/texts',
+        data={'content': 'test1', 'tags': 'lel,hue'})
+    text_id = resp.json['text']['text_id']
+    resp = client_with_tok.get('/texts/{}'.format(text_id),
+        query_string={'fields': 'text_id,tags'})
+    assert set(resp.json['text'].keys()) == {'text_id', 'tags'}
+
+def test_text_get_ignores_form(client_with_tok):
+    resp = client_with_tok.post('/texts',
+        data={'content': 'test1', 'tags': 'lel,hue'})
     text_id = resp.json['text']['text_id']
     resp = client_with_tok.get('/texts/{}'.format(text_id),
         data={'fields': 'text_id,tags'})
-    assert set(resp.json['text'].keys()) == {'text_id', 'tags'}
+    assert set(resp.json['text'].keys()) != {'text_id', 'tags'}
 
 def test_text_get_correct_response_fields(client_with_tok):
     resp = client_with_tok.post('/texts?content=eyb0ss')
