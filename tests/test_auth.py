@@ -15,6 +15,11 @@ def test_su_can_register_user(su_with_tok):
         data={'username': 'newuser', 'password': 'lalelilolu'})
     assert resp.status_code == 200
 
+def test_su_cannot_register_user_using_querystring(su_with_tok):
+    resp = su_with_tok.post('/users',
+        query_string={'username': 'newuser', 'password': 'lalelilolu'})
+    assert resp.status_code == 400
+
 def test_logged_off_client_cannot_register_user(client):
     resp = client.post('/users',
         data={'username': 'newuser', 'password': 'lalelilolu'})
@@ -33,6 +38,13 @@ def test_registered_user_can_login(su_with_tok, client):
     assert resp.status_code == 200
     assert 'access_token' in resp.json
     assert 'refresh_token' in resp.json
+
+def test_registered_user_cannot_login_using_querystring(su_with_tok, client):
+    su_with_tok.post('/users',
+        data={'username': 'newuser', 'password': 'lalelilolu'})
+    resp = client.post('/auth/login',
+        query_string={'username': 'newuser', 'password': 'lalelilolu'})
+    assert resp.status_code == 400
 
 def test_registered_user_cannot_login_wrong_passwd(su_with_tok, client):
     su_with_tok.post('/users',

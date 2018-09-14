@@ -47,7 +47,8 @@ def check_priviledges():
 
 class Login(Resource):
     def post(self):
-        args = parser.parse(_USER_PASS_ARGS, request)
+        args = parser.parse(_USER_PASS_ARGS, request,
+            locations=('form', 'json'))
 
         user = User.query.filter_by(username=args['username']).first()
         if user is None or not verify_hash(args['password'], user.password):
@@ -91,7 +92,8 @@ class UsersRes(Resource):
     @jwt_required
     def post(self):
         check_priviledges()
-        args = parser.parse(_USER_PASS_ARGS, request)
+        args = parser.parse(_USER_PASS_ARGS, request,
+            locations=('form', 'json'))
 
         if User.query.filter_by(username=args['username']).first():
             return mk_errors(
