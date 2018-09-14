@@ -3,11 +3,12 @@ from memedata.app import get_app
 from memedata.resources import images
 from memedata.config import TestConfig
 from memedata.database import db
+from memedata.models import User
 
 from io import BytesIO
 from PIL import Image
 
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 @pytest.fixture()
 def app():
@@ -15,6 +16,7 @@ def app():
     app = get_app(TestConfig)
     with app.app_context():
         db.create_all()
+        User.create_and_save('su', 'testpass')
     yield app
     #teardown
     with app.app_context():
@@ -53,6 +55,34 @@ def client_with_tok(app):
     with app.test_client() as c:
         with app.app_context():
             token = create_access_token(identity='testuser')
+            c.get = decorate_crud(c.get, token)
+            c.post = decorate_crud(c.post, token)
+            c.delete = decorate_crud(c.delete, token)
+            c.put = decorate_crud(c.put, token)
+        yield c
+
+    #fake images db
+    images.DB.clear()
+
+@pytest.fixture()
+def client_with_refresh_tok(app):
+    with app.test_client() as c:
+        with app.app_context():
+            token = create_refresh_token(identity='testuser')
+            c.get = decorate_crud(c.get, token)
+            c.post = decorate_crud(c.post, token)
+            c.delete = decorate_crud(c.delete, token)
+            c.put = decorate_crud(c.put, token)
+        yield c
+
+    #fake images db
+    images.DB.clear()
+
+@pytest.fixture()
+def su_with_tok(app):
+    with app.test_client() as c:
+        with app.app_context():
+            token = create_access_token(identity='su')
             c.get = decorate_crud(c.get, token)
             c.post = decorate_crud(c.post, token)
             c.delete = decorate_crud(c.delete, token)

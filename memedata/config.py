@@ -2,15 +2,17 @@ app_name = 'memedata-memedata'
 
 debug = True
 
-db_path = 'sqlite:////tmp/test.db'
-
 #ignore auth requirements
 #NEVER user it in prod or during tests
 ignore_jwt_texts = not True
-ignore_jwt_images = False
-ignore_jwt_auth = False
+ignore_jwt_images = not True
+ignore_jwt_auth = not True
 
 min_password_len = 8
+
+superusers = {
+    'su',
+}
 
 class BaseConfig:
     DEBUG = debug

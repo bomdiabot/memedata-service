@@ -41,6 +41,10 @@ _USER_PASS_ARGS = {
         validate=validate.Length(min=config.min_password_len), required=True),
 }
 
+def check_priviledges():
+    if not get_jwt_identity() in config.superusers:
+        abort(401, 'unauthorized user')
+
 class Login(Resource):
     def post(self):
         args = parser.parse(_USER_PASS_ARGS, request)
@@ -61,6 +65,7 @@ class Login(Resource):
 class UserRes(Resource):
     @jwt_required
     def get(self, user_id):
+        check_priviledges()
         user = User.query.filter_by(user_id=user_id).first()
         if user is None:
             return mk_errors(404, 'user id={} does not exist'.format(user_id))
@@ -68,6 +73,7 @@ class UserRes(Resource):
 
     @jwt_required
     def delete(self, user_id):
+        check_priviledges()
         user = User.query.filter_by(user_id=user_id).first()
         if user is None:
             return mk_errors(404, 'user id={} does not exist'.format(user_id))
@@ -78,10 +84,13 @@ class UserRes(Resource):
 class UsersRes(Resource):
     @jwt_required
     def get(self):
+        check_priviledges()
         users = User.query.all()
         return {'users': [u.to_json() for u in users]}
 
+    @jwt_required
     def post(self):
+        check_priviledges()
         args = parser.parse(_USER_PASS_ARGS, request)
 
         if User.query.filter_by(username=args['username']).first():
@@ -134,9 +143,7 @@ class LogoutRefresh(Resource):
         except:
             return mk_errors('error in logout')
 
-class SecretResource(Resource):
+class Ok(Resource):
     @jwt_required
     def get(self):
-        return {
-            'd': ':^)'
-        }
+        return mk_message('ok')
