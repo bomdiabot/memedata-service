@@ -1,7 +1,7 @@
 import pytest
 from memedata.app import get_app
 from memedata.resources import images
-from memedata.config import TestConfig
+from memedata import config
 from memedata.database import db
 from memedata.models import User
 
@@ -13,7 +13,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token
 @pytest.fixture()
 def app():
     #setup
-    app = get_app(TestConfig)
+    app = get_app(config.get_app_test_config_class())
     with app.app_context():
         db.create_all()
         User.create_and_save('su', 'testpass')
@@ -46,7 +46,6 @@ def decorate_crud(fn, token):
 def client(app):
     with app.test_client() as c:
         yield c
-
     #fake images db
     images.DB.clear()
 
@@ -60,7 +59,6 @@ def client_with_tok(app):
             c.delete = decorate_crud(c.delete, token)
             c.put = decorate_crud(c.put, token)
         yield c
-
     #fake images db
     images.DB.clear()
 

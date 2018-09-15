@@ -6,10 +6,13 @@ from memedata.extensions import db, api, jwt
 from memedata import config
 from memedata.util import mk_errors
 
-def get_app(config_obj=config.DevConfig):
+def get_app(conf_obj=None):
+    if conf_obj is None:
+        conf_obj = config.get_app_config_class()
+
     app = Flask(config.app_name)
     #configuration
-    app.config.from_object(config_obj)
+    app.config.from_object(conf_obj)
     #extensions
     register_extensions(app)
     #error handlers

@@ -21,6 +21,30 @@ def get_pass(prompt, max_n_trials=3):
         return pass_1
     raise ValueError('maximum number of trials reached')
 
+def create_db_tables(app):
+    with app.app_context():
+        db.create_all()
+
+def drop_db_tables(app):
+    with app.app_context():
+        db.drop_all()
+
+def create_db(app):
+    create_db_tables(app)
+
+def reset_db(app):
+    drop_db_tables(app)
+    create_db_tables(app)
+
+def create_su(app, passwd=''):
+    if not passwd:
+        passwd = get_pass('enter superuser password: ')
+    elif len(passwd) < config.min_password_len:
+        raise ValueError(
+            'length of password < {}'.format(config.min_password_len))
+    with app.app_context():
+        User.create_and_save('su', passwd)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -31,32 +55,42 @@ def main():
         default=False
     )
     parser.add_argument(
+        '--create_db',
+        nargs='?',
+        help='create database',
+        const=True,
+        default=False
+    )
+    parser.add_argument(
         '--create_su',
         nargs='?',
         help='create superuser with name "su"',
         const=True,
         default=False
     )
+    parser.add_argument(
+        '--su_passwd',
+        help='superuser password (leave empty to be prompted)',
+        default='',
+    )
     args = parser.parse_args()
 
     #app setup
-    app = get_app(config.SetupConfig)
+    app = get_app()
+
+    print('setting up for env "{}"'.format(config.env))
     #database setup
     if args.reset_db:
-        print('dropping tables...', end=' ', flush=True)
-        with app.app_context():
-            db.drop_all()
+        print('resetting database...', end=' ', flush=True)
+        reset_db(app)
+        print('done.')
+    elif args.create_db:
+        print('creating tables...', end=' ', flush=True)
+        create_db(app)
         print('done.')
 
-    print('creating tables...', end=' ', flush=True)
-    with app.app_context():
-        db.create_all()
-    print('done.')
-
     if args.create_su:
-        passwd = get_pass('enter superuser password: ')
-        with app.app_context():
-            User.create_and_save('su', passwd)
+        create_su(app, args.su_passwd)
         print('superuser "su" created.')
 
     print('all done.')

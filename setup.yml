@@ -1,0 +1,12 @@
+production:
+    db_path: 'sqlite:////db/memedata.db'
+    host: "0.0.0.0"
+    port: 5000
+development:
+    db_path: 'sqlite:////tmp/memedata.db'
+    host: "0.0.0.0"
+    port: 5000
+test:
+    db_path: 'sqlite://'
+    host: "0.0.0.0"
+    port: 5000

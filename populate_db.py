@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-from memedata.app import get_app
+from memedata import app
 from memedata.database import db
 from memedata.models import Text, Tag, User
+from memedata import config
 import uuid
 import random
 import os
@@ -17,8 +18,11 @@ TAGS_FILES = [
 
 USERS_FILE = os.path.join('data', 'users.csv')
 
+def get_app(**conf):
+    return app.get_app(**conf)
+
 def read_lines(path):
-    with open(path) as f:
+    with open(path, encoding='utf-8') as f:
         lines = [l.strip() for l in f]
     return lines
 
@@ -52,8 +56,7 @@ def populate_texts(size):
 
 def populate_texts_with_sentences():
     for path in SENTENCES_FILES:
-        with open(path) as f:
-            lines = [l.strip() for l in f]
+        lines = read_lines(path)
         texts = [Text(l) for l in lines if l]
         with get_app().app_context():
             db.session.add_all(texts)
@@ -85,6 +88,7 @@ def populate_users():
             User.create_and_save(name, passwd)
 
 def main():
+    print('generating for env "{}"'.format(config.env))
     print('populating texts...')
     populate_texts_with_sentences()
     populate_texts(random.randint(25, 50))

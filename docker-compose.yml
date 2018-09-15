@@ -1,0 +1,9 @@
+memedata_api:
+    #build: .
+    image: memedata
+    ports:
+        - "5000:5000"
+    volumes:
+        - /home/erik/rand/db_dev:/tmp
+        - /home/erik/rand/db:/db
+    command: /app/run.py server --env production
