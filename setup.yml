@@ -1,3 +1,4 @@
+env: 'production'
 production:
     db_path: 'sqlite:////db/memedataprod.db'
     host: "0.0.0.0"

@@ -94,14 +94,15 @@ def main():
         print('resetting database...', end=' ', flush=True)
         reset_db(app)
         print('done.')
-    elif args.create_db:
-        print('creating tables...', end=' ', flush=True)
-        create_db(app)
-        print('done.')
-    elif args.del_db:
-        print('deleting database...', end=' ', flush=True)
-        del_db(app)
-        print('done.')
+    else:
+        if args.del_db:
+            print('deleting database...', end=' ', flush=True)
+            del_db(app)
+            print('done.')
+        if args.create_db:
+            print('creating tables...', end=' ', flush=True)
+            create_db(app)
+            print('done.')
 
     if args.create_su:
         create_su(app, args.su_passwd)

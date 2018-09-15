@@ -20,12 +20,8 @@ ENV LC_ALL=pt_BR.UTF-8
 ENV LANG=pt_BR.UTF-8
 ENV LANGUAGE=pt_BR.UTF-8
 
-#env vars for app
-RUN printf \
-"#!/bin/bash\n\
-export MEMEDATA_SECRET_KEY=$(openssl rand -hex 64)\n\
-export MEMEDATA_JWT_SECRET_KEY=$(openssl rand -hex 64)\n" \
-    > env.sh
+#env initialization for app
+RUN ["python3", "/app/mk_env_file.py", "--dst_file=env.sh"]
 RUN printf \
 "#!/bin/bash\n\
 source env.sh\n\

@@ -40,7 +40,7 @@ def get_app_config_class(**override_environ):
     conf.update(**override_environ)
     class AppConfig(BaseAppConfig):
         environ = env
-        DEBUG = is_dev()
+        DEBUG = _is_dev()
         TESTING = False
         SECRET_KEY = _get_var(
             'MEMEDATA_SECRET_KEY', 'secret', conf)

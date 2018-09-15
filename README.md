@@ -32,15 +32,15 @@ This service implements the images/texts/memes access service for bomdiabot syst
 `docker install -t memedata .`
 - Edit the `docker-compose.yml` files to correctly map your local `volumes` to the dev/prod container volumes.
 - Build: `docker-compose build`
-- Build the prod database: `docker-compose run memedata_api /app/run.py setup --reset_db --create_su --su_passwd=<YOUR_PASSWORD>`
+- Build the prod database: `docker-compose run memedata_api ./init_db.sh <SUPERUSER_PASSWORD>`
 - Run the server: `docker-compose up`
 
-**Testing**: 
+**Testing**:
 
-- Run the tests: `docker-compose run memedata_api /app/run.py test`
+- Run the tests: `docker-compose run memedata_api ./run_tests.sh`
 
 **Dev server**:
 
-- Build the dev database: `docker-compose run memedata_api /app/run.py setup --env development --reset_db --create_su --su_passwd=<YOUR_PASSWORD>`
-- Populate the dev database with random data: `docker-compose run memedata_api /app/run.py populate_db --env development`
-- Run the dev server: `docker-compose run memedata_api /app/run.py server --env development`
+- Build the dev database: `docker-compose run memedata_api bash -c "$(./ch_dev_env.sh); ./init_db.sh <SUPERUSER_PASSWORD>"`
+- Populate the dev database with random data: `docker-compose run memedata_api bash -c "$(./ch_dev_env.sh); ./init_db.sh <SUPERUSER_PASSWORD>"`
+- Run the dev server: `docker-compose run memedata_api bash -c "$(./ch_dev_env.sh); ./run_server.sh"`

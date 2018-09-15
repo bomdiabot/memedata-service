@@ -7,4 +7,4 @@ memedata_api:
     volumes:
         - /home/erik/rand/db_dev:/tmp
         - /home/erik/rand/db:/db
-    command: /app/run.py server --env production
+    command: /app/run_server.sh
