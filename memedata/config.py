@@ -21,8 +21,9 @@ superusers = {
 
 class BaseAppConfig:
     DEBUG = debug
-    SECRET_KEY = os.environ['MEMEDATA_SECRET_KEY']
-    JWT_SECRET_KEY = os.environ['MEMEDATA_JWT_SECRET_KEY']
+    SECRET_KEY = os.environ['MEMEDATA_SECRET_KEY'] if env != 'test' else 'test'
+    JWT_SECRET_KEY = \
+        os.environ['MEMEDATA_JWT_SECRET_KEY'] if env != 'test' else 'test'
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     SQLALCHEMY_TRACK_MODIFICATIONS = False

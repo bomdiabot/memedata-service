@@ -74,10 +74,11 @@ def main():
     )
     args, unknown = parser.parse_known_args()
 
-    if not 'MEMEDATA_SECRET_KEY' in os.environ:
-        raise ValueError('env not properly set')
-    if not 'MEMEDATA_JWT_SECRET_KEY' in os.environ:
-        raise ValueError('env not properly set')
+    if args.mode != 'test':
+        if not 'MEMEDATA_SECRET_KEY' in os.environ:
+            raise ValueError('env not properly set')
+        if not 'MEMEDATA_JWT_SECRET_KEY' in os.environ:
+            raise ValueError('env not properly set')
 
     #setting up env
     with open(args.setup_path) as f:
