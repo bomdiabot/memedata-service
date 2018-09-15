@@ -4,4 +4,4 @@ python:
 install:
   pip install -r requirements.txt
 script:
-  bash run_tests.sh
+  bash -c "source env.sh; python3 run.py test"
