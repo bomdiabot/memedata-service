@@ -29,6 +29,9 @@ def drop_db_tables(app):
     with app.app_context():
         db.drop_all()
 
+def del_db(app):
+    drop_db_tables(app)
+
 def create_db(app):
     create_db_tables(app)
 
@@ -48,16 +51,23 @@ def create_su(app, passwd=''):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--reset_db',
+        '--create_db',
         nargs='?',
-        help='reset database',
+        help='create database',
         const=True,
         default=False
     )
     parser.add_argument(
-        '--create_db',
+        '--del_db',
         nargs='?',
-        help='create database',
+        help='delete database',
+        const=True,
+        default=False
+    )
+    parser.add_argument(
+        '--reset_db',
+        nargs='?',
+        help='reset database',
         const=True,
         default=False
     )
@@ -87,6 +97,10 @@ def main():
     elif args.create_db:
         print('creating tables...', end=' ', flush=True)
         create_db(app)
+        print('done.')
+    elif args.del_db:
+        print('deleting database...', end=' ', flush=True)
+        del_db(app)
         print('done.')
 
     if args.create_su:
