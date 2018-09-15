@@ -3,6 +3,7 @@ memedata_api:
     image: memedata
     ports:
         - "5000:5000"
+    #edit these paths to map to your local volumes
     volumes:
         - /home/erik/rand/db_dev:/tmp
         - /home/erik/rand/db:/db
