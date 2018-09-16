@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+~*
+.pytest_cache/
+venv/
+env.sh
+
+docs/build/
+doctrees/
+.buildinfo
