@@ -510,6 +510,44 @@ Everything is obtained via a REST API, which is described here.</p>
 </table>
 </dd></dl>
 
+<dl class="delete">
+<dt id="delete--texts-(int-text_id)">
+<code class="descname">DELETE </code><code class="descname">/texts/</code><span class="sig-paren">(</span><em class="property">int: </em><em>text_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--texts-(int-text_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete text resource.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/texts/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJ0eXAiOiJKV1QiLCJhb</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">NO CONTENT</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7235#section-4.2">Authorization</a> – access token of logged in user (required)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>text_id</strong> (<em>int</em>) – id of text resource.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">204 No Content</a> – text deleted</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="get">
 <dt id="get--texts-(int-text_id)">
 <code class="descname">GET </code><code class="descname">/texts/</code><span class="sig-paren">(</span><em class="property">int: </em><em>text_id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--texts-(int-text_id)" title="Permalink to this definition">¶</a></dt>
@@ -640,11 +678,11 @@ Everything is obtained via a REST API, which is described here.</p>
 </dd></dl>
 
 <dl class="delete">
-<dt id="delete--texts-(int-text_id)">
-<code class="descname">DELETE </code><code class="descname">/texts/</code><span class="sig-paren">(</span><em class="property">int: </em><em>text_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--texts-(int-text_id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete text resource.</p>
+<dt id="delete--users-(int-user_id)">
+<code class="descname">DELETE </code><code class="descname">/users/</code><span class="sig-paren">(</span><em class="property">int: </em><em>user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--users-(int-user_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete user. Only priviledged users can use this method.</p>
 <p><strong>Example request</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/texts/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/users/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
 <span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJ0eXAiOiJKV1QiLCJhb</span>
 </pre></div>
@@ -664,12 +702,12 @@ Everything is obtained via a REST API, which is described here.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>text_id</strong> (<em>int</em>) – id of text resource.</li>
+<li><strong>user_id</strong> (<em>int</em>) – id of user.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">204 No Content</a> – text deleted</li>
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">204 No Content</a> – user deleted</li>
 </ul>
 </td>
 </tr>
@@ -724,44 +762,6 @@ Everything is obtained via a REST API, which is described here.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
 <li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – user found</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="delete">
-<dt id="delete--users-(int-user_id)">
-<code class="descname">DELETE </code><code class="descname">/users/</code><span class="sig-paren">(</span><em class="property">int: </em><em>user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--users-(int-user_id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete user. Only priviledged users can use this method.</p>
-<p><strong>Example request</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">DELETE</span> <span class="nn">/users/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
-<span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJ0eXAiOiJKV1QiLCJhb</span>
-</pre></div>
-</div>
-<p><strong>Example response</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">204</span> <span class="ne">NO CONTENT</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><a class="reference external" href="https://tools.ietf.org/html/rfc7235#section-4.2">Authorization</a> – access token of logged in user (required)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>user_id</strong> (<em>int</em>) – id of user.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">204 No Content</a> – user deleted</li>
 </ul>
 </td>
 </tr>
