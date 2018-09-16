@@ -29,7 +29,7 @@ This service implements the images/texts/memes access service for bomdiabot syst
 - Install docker and docker-compose.
 - Download the repo.
 - In the repo root dir, run:
-`docker install -t memedata .`
+`docker build -t memedata .`
 - Edit the `docker-compose.yml` files to correctly map your local `volumes` to the dev/prod container volumes.
 - Build: `docker-compose build`
 - Build the prod database: `docker-compose run memedata_api ./init_db.sh <SUPERUSER_PASSWORD>`
