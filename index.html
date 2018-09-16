@@ -263,69 +263,6 @@ Everything is obtained via a REST API, which is described here.</p>
 </table>
 </dd></dl>
 
-<dl class="post">
-<dt id="post--texts">
-<code class="descname">POST </code><code class="descname">/texts</code><a class="headerlink" href="#post--texts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create new text resource.</p>
-<p><strong>Example request</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/texts</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
-<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
-<span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJ0eXAiOiJKV1QiLCJhb</span>
-</pre></div>
-</div>
-<p><strong>Example response</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">CREATED</span>
-<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
-
-<span class="p">{</span>
-    <span class="nt">&quot;text&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Bom dia!&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;text_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="nt">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;bomdia&quot;</span>
-        <span class="p">],</span>
-        <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-        <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-09-15T22:53:26+00:00&quot;</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><a class="reference external" href="https://tools.ietf.org/html/rfc7235#section-4.2">Authorization</a> – access token of logged in user (required)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Form Parameters:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>content</strong> – the text contents (required)</li>
-<li><strong>tags</strong> – comma-separated list of tags</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> – resource created</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">memedata.models.Text</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="get">
 <dt id="get--texts">
 <code class="descname">GET </code><code class="descname">/texts</code><a class="headerlink" href="#get--texts" title="Permalink to this definition">¶</a></dt>
@@ -409,11 +346,11 @@ Everything is obtained via a REST API, which is described here.</p>
 </dd></dl>
 
 <dl class="post">
-<dt id="post--users">
-<code class="descname">POST </code><code class="descname">/users</code><a class="headerlink" href="#post--users" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create user. Only priviledged users can use this method.</p>
+<dt id="post--texts">
+<code class="descname">POST </code><code class="descname">/texts</code><a class="headerlink" href="#post--texts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new text resource.</p>
 <p><strong>Example request</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/users</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/texts</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
 <span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJ0eXAiOiJKV1QiLCJhb</span>
@@ -424,8 +361,15 @@ Everything is obtained via a REST API, which is described here.</p>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;user &#39;joao&#39; created&quot;</span>
+    <span class="nt">&quot;text&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Bom dia!&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;text_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;bomdia&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-09-15T22:53:26+00:00&quot;</span>
+    <span class="p">},</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -439,15 +383,25 @@ Everything is obtained via a REST API, which is described here.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Form Parameters:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>content</strong> – the text contents (required)</li>
+<li><strong>tags</strong> – comma-separated list of tags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
 <li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> – user created</li>
+<tr class="field-even field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> – resource created</li>
 </ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">memedata.models.Text</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -510,31 +464,24 @@ Everything is obtained via a REST API, which is described here.</p>
 </table>
 </dd></dl>
 
-<dl class="put">
-<dt id="put--texts-(int-text_id)">
-<code class="descname">PUT </code><code class="descname">/texts/</code><span class="sig-paren">(</span><em class="property">int: </em><em>text_id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--texts-(int-text_id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update text resource.</p>
+<dl class="post">
+<dt id="post--users">
+<code class="descname">POST </code><code class="descname">/users</code><a class="headerlink" href="#post--users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create user. Only priviledged users can use this method.</p>
 <p><strong>Example request</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">PUT</span> <span class="nn">/texts/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">POST</span> <span class="nn">/users</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
 <span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJ0eXAiOiJKV1QiLCJhb</span>
 </pre></div>
 </div>
 <p><strong>Example response</strong>:</p>
-<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">201</span> <span class="ne">CREATED</span>
 <span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
 
 <span class="p">{</span>
-    <span class="nt">&quot;text&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Updated text&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;text_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="nt">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;bomdia&quot;</span>
-        <span class="p">],</span>
-        <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-09-16T23:00:13+00:00&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-09-15T22:53:26+00:00&quot;</span>
-    <span class="p">}</span>
+    <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;user &#39;joao&#39; created&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -548,30 +495,15 @@ Everything is obtained via a REST API, which is described here.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>text_id</strong> (<em>int</em>) – id of text resource.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Form Parameters:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>content</strong> – the text contents</li>
-<li><strong>tags</strong> – comma-separated list of tags</li>
-</ul>
-</td>
-</tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
 <li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
-<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – text updated</li>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2">201 Created</a> – user created</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">memedata.models.Text</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -671,6 +603,74 @@ Everything is obtained via a REST API, which is described here.</p>
 <tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first last simple">
 <li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">204 No Content</a> – text deleted</li>
 </ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--texts-(int-text_id)">
+<code class="descname">PUT </code><code class="descname">/texts/</code><span class="sig-paren">(</span><em class="property">int: </em><em>text_id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--texts-(int-text_id)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update text resource.</p>
+<p><strong>Example request</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">PUT</span> <span class="nn">/texts/1</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">example.com</span>
+<span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+<span class="na">Authorization</span><span class="o">:</span> <span class="l">Bearer eyJ0eXAiOiJKV1QiLCJhb</span>
+</pre></div>
+</div>
+<p><strong>Example response</strong>:</p>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+
+<span class="p">{</span>
+    <span class="nt">&quot;text&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Updated text&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;text_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&quot;bomdia&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-09-16T23:00:13+00:00&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2018-09-15T22:53:26+00:00&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Request Headers:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7235#section-4.2">Authorization</a> – access token of logged in user (required)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>text_id</strong> (<em>int</em>) – id of text resource.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Form Parameters:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>content</strong> – the text contents</li>
+<li><strong>tags</strong> – comma-separated list of tags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Response Headers:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Content-Type</a> – application/json</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Status Codes:</th><td class="field-body"><ul class="first simple">
+<li><a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.1">200 OK</a> – text updated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">memedata.models.Text</span></code></p>
 </td>
 </tr>
 </tbody>
