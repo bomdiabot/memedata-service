@@ -44,10 +44,10 @@ class TextRes(Resource):
     }
 
     @staticmethod
-    def get_text(uid):
-        text = Text.query.get(uid)
+    def get_text(text_id):
+        text = Text.query.get(text_id)
         if text is None:
-            abort(mk_errors(404, '{} doest not exist'.format(uid)))
+            abort(mk_errors(404, '{} doest not exist'.format(text_id)))
         return text
 
     @staticmethod
@@ -57,8 +57,45 @@ class TextRes(Resource):
         return args
 
     @jwt_required
-    def get(self, uid):
-        text = TextRes.get_text(uid)
+    def get(self, text_id):
+        """
+        Return text resource.
+
+        .. :quickref: Get Text; Get text.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    GET /texts/1 HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 200 OK
+	    Content-Type: application/json
+
+            {
+                "text": {
+                    "content": "Bom dia!",
+                    "text_id": 1,
+                    "tags": [
+                        "bomdia"
+                    ],
+                    "updated_at": null,
+                    "created_at": "2018-09-15T22:53:26+00:00"
+                }
+            }
+
+        :param int text_id: id of text resource.
+        :resheader Content-Type: application/json
+        :status 200: text found
+        :returns: :class:`memedata.models.Text`
+        """
+        text = TextRes.get_text(text_id)
         try:
             args = TextRes.parse_get_args(request)
         except ValidationError as e:
@@ -67,8 +104,47 @@ class TextRes(Resource):
         return filter_fields(obj, args.get('fields'))
 
     @jwt_required
-    def put(self, uid):
-        text = TextRes.get_text(uid)
+    def put(self, text_id):
+        """
+        Update text resource.
+
+        .. :quickref: Put Text; Update text.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    PUT /texts/1 HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 200 OK
+	    Content-Type: application/json
+
+            {
+                "text": {
+                    "content": "Updated text",
+                    "text_id": 1,
+                    "tags": [
+                        "bomdia"
+                    ],
+                    "updated_at": "2018-09-16T23:00:13+00:00"
+                    "created_at": "2018-09-15T22:53:26+00:00"
+                }
+            }
+
+        :param int text_id: id of text resource.
+        :form content: the text contents
+        :form tags: comma-separated list of tags
+        :resheader Content-Type: application/json
+        :status 200: text updated
+        :returns: :class:`memedata.models.Text`
+        """
+        text = TextRes.get_text(text_id)
         try:
             schema = TextSchema()
             text = schema.load(request.values, instance=text, partial=True)
@@ -79,8 +155,29 @@ class TextRes(Resource):
         return schema.dump(text)
 
     @jwt_required
-    def delete(self, uid):
-        text = TextRes.get_text(uid)
+    def delete(self, text_id):
+        """
+        Delete text resource.
+
+        .. :quickref: Delete Text; Remove text.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    DELETE /texts/1 HTTP/1.1
+	    Host: example.com
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 204 NO CONTENT
+
+        :param int text_id: id of text resource.
+        :status 204: text deleted
+        """
+        text = TextRes.get_text(text_id)
         db.session.delete(text)
         db.session.commit()
         return '', 204
@@ -119,10 +216,6 @@ class TextsRes(Resource):
     }
 
     TAGS_BLACKLIST = {
-        'generated',
-        'background',
-        'meme',
-        'captioned',
     }
 
     GET_MAX_N_RESULTS = 1000
@@ -198,6 +291,45 @@ class TextsRes(Resource):
 
     @jwt_required
     def post(self):
+        """
+        Create new text resource.
+
+        .. :quickref: Text creation; Create new text.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    POST /texts HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 201 CREATED
+	    Content-Type: application/json
+
+            {
+                "text": {
+                    "content": "Bom dia!",
+                    "text_id": 1,
+                    "tags": [
+                        "bomdia"
+                    ],
+                    "updated_at": null,
+                    "created_at": "2018-09-15T22:53:26+00:00"
+                },
+            }
+
+
+        :form content: the text contents (required)
+        :form tags: comma-separated list of tags
+        :resheader Content-Type: application/json
+        :status 201: resource created
+        :returns: :class:`memedata.models.Text`
+        """
         try:
             args = TextsRes.parse_post_args(request)
             text = TextSchema().load(args)
@@ -209,6 +341,64 @@ class TextsRes(Resource):
 
     @jwt_required
     def get(self):
+        """
+        Return collection of texts.
+
+        .. :quickref: Texts collection; Get collection of texts.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    GET /texts HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 200 OK
+	    Content-Type: application/json
+
+            {
+                "texts": [
+                    {
+                        "content": "Bom dia!",
+                        "text_id": 1,
+                        "tags": [
+                            "bomdia"
+                        ],
+                        "updated_at": null,
+                        "created_at": "2018-09-15T22:53:26+00:00"
+                    },
+                    {
+                        "content": "Eu adoro as manhãs",
+                        "text_id": 32,
+                        "tags": [
+                            "jesus",
+                            "sexta"
+                        ],
+                        "updated_at": null,
+                        "created_at": "2018-09-15T22:53:26+00:00"
+                    },
+                ],
+                "offset": 2
+            }
+
+
+        :query string fields: comma-separated list of fields to get for each text.
+        :query string date_from: only texts created after specified date (inclusive).
+        :query string date_to: only texts created before specified date.
+        :query string any_tags: texts with at least one tags in specified list.
+        :query string all_tags: texts only containing all specified tags.
+        :query string no_tags: texts only not containing any of specified tags.
+        :query int offset: pagination offset to start getting results
+        :query int max_n_results: maximum number of results to return.
+        :resheader Content-Type: application/json
+        :status 200: texts found
+        :returns: :class:`memedata.models.Text`
+        """
         try:
             args = TextsRes.parse_get_args(request)
         except ValidationError as e:

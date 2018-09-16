@@ -280,7 +280,7 @@ def test_texts_post_correct_error_format_2(client_with_tok):
 
 def test_texts_post_correct_error_format_3(client_with_tok):
     resp = client_with_tok.post('/texts',
-            data={'content': 'correct', 'tags': 'blacklisted,generated'})
+            data={'content': 'correct', 'tags': 'blackl?isted,generated'})
 
     assert resp.status_code == 400
     assert set(resp.json.keys()) == {'errors'}
