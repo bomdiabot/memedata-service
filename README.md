@@ -44,3 +44,27 @@ This service implements the images/texts/memes access service for bomdiabot syst
 - Build the dev database: `docker-compose run memedata_api bash -c "$(./ch_dev_env.sh); ./init_db.sh <SUPERUSER_PASSWORD>"`
 - Populate the dev database with random data: `docker-compose run memedata_api bash -c "$(./ch_dev_env.sh); ./init_db.sh <SUPERUSER_PASSWORD>"`
 - Run the dev server: `docker-compose run memedata_api bash -c "$(./ch_dev_env.sh); ./run_server.sh"`
+
+### Via venv
+- Download the repo.
+- Create a venv in the root dir: `python3 -m venv venv`
+- Run `source venv/bin/activate`.
+- Install dependencies: `pip install -r requirements.txt`
+- Set up environment vars: `$(./mk_env_file.py)`
+- Build the prod database: `./init_db.sh <SUPERUSER_PASSWORD>`
+- Run the server: `./run_server.sh`
+
+**Testing**:
+
+- Run the tests: `./run_tests.sh`
+
+**Dev server**:
+
+- Set up dev environment: `$(./ch_dev_env.sh)`
+- Build the dev database: `./init_db.sh <SUPERUSER_PASSWORD>"`
+- Populate the dev database with random data: `./init_db.sh <SUPERUSER_PASSWORD>"`
+- Run the dev server: `./run_server.sh"`
+- To go back to prod environment, run again `$(./mk_env_file.py)`.
+
+## Links
+- API documentation: <https://bomdiabot.github.io/memedata-service/>.
