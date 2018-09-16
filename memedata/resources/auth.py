@@ -100,13 +100,8 @@ class UsersRes(Resource):
                 400, 'username "{}" already taken'.format(args['username']))
         new_user = User.create_and_save(args['username'], args['password'])
 
-        access_tok = create_access_token(identity=args['username'])
-        refresh_tok = create_refresh_token(identity=args['username'])
-
         return {
-            'message': 'user "{}" created'.format(args['username']),
-            'access_token': access_tok,
-            'refresh_token': refresh_tok,
+            'message': 'user \'{}\' created'.format(args['username']),
             'user_id': int(new_user.user_id),
         }
 
