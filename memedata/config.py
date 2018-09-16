@@ -31,6 +31,7 @@ superusers = {
 }
 
 class BaseAppConfig:
+    PROPAGATE_EXCEPTIONS = True
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     SQLALCHEMY_TRACK_MODIFICATIONS = False

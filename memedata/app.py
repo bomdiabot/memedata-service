@@ -4,7 +4,7 @@ from flask import Flask
 
 from memedata.extensions import db, api, jwt
 from memedata import config
-from memedata.util import mk_errors
+from memedata.errors import register_handlers
 
 def get_app(conf_obj=None):
     if conf_obj is None:
@@ -25,20 +25,7 @@ def register_extensions(app):
     api.init_app(app)
 
 def register_error_handlers(app):
-    def error_handler(error):
-        code = getattr(error, 'status_code', 500)
-        try:
-            if config.debug:
-                messages = [str(error)[:1024]]
-            else:
-                try:
-                    messages = error.messages
-                except:
-                    messages = [error.message]
-        except:
-            messages = ['something went wrong!']
-        return mk_errors(code, messages)
-    app.errorhandler(Exception)(error_handler)
+    register_handlers(app) 
 
 def main():
     app = get_app()
