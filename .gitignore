@@ -7,3 +7,5 @@ venv/
 env.sh
 
 docs/build/
+doctrees/
+.buildinfo

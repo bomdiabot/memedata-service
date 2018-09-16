@@ -13,7 +13,7 @@ def test_unregistered_user_cannot_login(client):
 def test_su_can_register_user(su_with_tok):
     resp = su_with_tok.post('/users',
         data={'username': 'newuser', 'password': 'lalelilolu'})
-    assert resp.status_code == 200
+    assert resp.status_code == 201
 
 def test_su_cannot_register_user_using_querystring(su_with_tok):
     resp = su_with_tok.post('/users',
@@ -93,17 +93,17 @@ def test_user_can_use_new_tok(su_with_tok, client):
 
 def test_user_can_logout_access(client_with_tok):
     resp = client_with_tok.post('/auth/logout/access')
-    assert resp.status_code == 200
+    assert resp.status_code == 204
 
 def test_user_can_logout_refresh(client_with_refresh_tok):
     resp = client_with_refresh_tok.post('/auth/logout/refresh')
-    assert resp.status_code == 200
+    assert resp.status_code == 204
 
 def test_user_cannot_use_revoked_tok(client_with_tok):
     resp1 = client_with_tok.get('/auth/ok')
     resp2 = client_with_tok.post('/auth/logout/access')
     resp3 = client_with_tok.get('/auth/ok')
-    assert resp1.status_code == 200
+    assert resp2.status_code == 204
     assert resp3.status_code == 401
 
 def test_su_can_get_user(su_with_tok):

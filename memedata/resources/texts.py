@@ -70,6 +70,7 @@ class TextRes(Resource):
 	    GET /texts/1 HTTP/1.1
 	    Host: example.com
 	    Accept: application/json
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
 
         **Example response**:
 
@@ -90,6 +91,7 @@ class TextRes(Resource):
                 }
             }
 
+        :reqheader Authorization: access token of logged in user (required)
         :param int text_id: id of text resource.
         :resheader Content-Type: application/json
         :status 200: text found
@@ -108,7 +110,7 @@ class TextRes(Resource):
         """
         Update text resource.
 
-        .. :quickref: Put Text; Update text.
+        .. :quickref: Update Text; Update text.
 
         **Example request**:
 
@@ -117,6 +119,7 @@ class TextRes(Resource):
 	    PUT /texts/1 HTTP/1.1
 	    Host: example.com
 	    Accept: application/json
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
 
         **Example response**:
 
@@ -132,11 +135,12 @@ class TextRes(Resource):
                     "tags": [
                         "bomdia"
                     ],
-                    "updated_at": "2018-09-16T23:00:13+00:00"
+                    "updated_at": "2018-09-16T23:00:13+00:00",
                     "created_at": "2018-09-15T22:53:26+00:00"
                 }
             }
 
+        :reqheader Authorization: access token of logged in user (required)
         :param int text_id: id of text resource.
         :form content: the text contents
         :form tags: comma-separated list of tags
@@ -167,6 +171,7 @@ class TextRes(Resource):
 
 	    DELETE /texts/1 HTTP/1.1
 	    Host: example.com
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
 
         **Example response**:
 
@@ -174,6 +179,7 @@ class TextRes(Resource):
 
 	    HTTP/1.1 204 NO CONTENT
 
+        :reqheader Authorization: access token of logged in user (required)
         :param int text_id: id of text resource.
         :status 204: text deleted
         """
@@ -303,6 +309,7 @@ class TextsRes(Resource):
 	    POST /texts HTTP/1.1
 	    Host: example.com
 	    Accept: application/json
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
 
         **Example response**:
 
@@ -324,6 +331,7 @@ class TextsRes(Resource):
             }
 
 
+        :reqheader Authorization: access token of logged in user (required)
         :form content: the text contents (required)
         :form tags: comma-separated list of tags
         :resheader Content-Type: application/json
@@ -344,7 +352,7 @@ class TextsRes(Resource):
         """
         Return collection of texts.
 
-        .. :quickref: Texts collection; Get collection of texts.
+        .. :quickref: Get Texts; Get collection of texts.
 
         **Example request**:
 
@@ -353,6 +361,7 @@ class TextsRes(Resource):
 	    GET /texts HTTP/1.1
 	    Host: example.com
 	    Accept: application/json
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
 
         **Example response**:
 
@@ -387,8 +396,11 @@ class TextsRes(Resource):
             }
 
 
-        :query string fields: comma-separated list of fields to get for each text.
-        :query string date_from: only texts created after specified date (inclusive).
+        :reqheader Authorization: access token of logged in user (required)
+        :query string fields: comma-separated list of fields to get for each \
+            text.
+        :query string date_from: only texts created after specified date \
+            (inclusive).
         :query string date_to: only texts created before specified date.
         :query string any_tags: texts with at least one tags in specified list.
         :query string all_tags: texts only containing all specified tags.

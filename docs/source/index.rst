@@ -3,26 +3,33 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to memedata's documentation!
-====================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+Welcome to memedata's documentation!
+====================================
+**Memedata** is `bomdiabot`_'s service responsible for providing
+text and image data for memes.
+Everything is obtained via a REST API, which is described here.
 
+The project's repo can be found `here`_.
 
-Indices and tables
-==================
+.. _bomdiabot: http://consagrado.xyz
+.. _here: https://github.com/bomdiabot/memedata-service
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-Blablabla
-=========
+===========
+API Summary
+===========
 
 .. qrefflask:: memedata.app:get_app()
 	:undoc-static:
+
+
+
+===========
+API Details
+===========
+
 .. autoflask:: memedata.app:get_app()
 	:undoc-static:

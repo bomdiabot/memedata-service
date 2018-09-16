@@ -47,6 +47,38 @@ def check_priviledges():
 
 class Login(Resource):
     def post(self):
+        """
+        Login into system.
+
+        .. :quickref: Login; User login.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    POST /auth/login HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 200 OK
+	    Content-Type: application/json
+
+            {
+                "message": "user 'jose' logged in",
+                "access_token": "lajdfh09l8valufd89y614b",
+                "refresh_token": "lkjahdljxoiuhqdouifhob"
+            }
+
+
+        :form username: the user name (required)
+        :form password: the user password (required)
+        :resheader Content-Type: application/json
+        :status 200: user logged in
+        """
         args = parser.parse(_USER_PASS_ARGS, request,
             locations=('form', 'json'))
 
@@ -58,7 +90,7 @@ class Login(Resource):
         refresh_tok = create_refresh_token(identity=args['username'])
 
         return {
-            'message': 'user "{}" logged in'.format(args['username']),
+            'message': 'user \'{}\' logged in'.format(args['username']),
             'access_token': access_tok,
             'refresh_token': refresh_tok,
         }
@@ -66,6 +98,41 @@ class Login(Resource):
 class UserRes(Resource):
     @jwt_required
     def get(self, user_id):
+        """
+        Get user. Only priviledged users can use this method.
+
+        .. :quickref: Get user; Get user.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    GET /users/1 HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 200 OK
+	    Content-Type: application/json
+
+            {
+                "user": {
+                    "user_id": 1,
+                    "password": "$pbkdf2-sha256$29000$7kp6XipQ",
+                    "username": "su"
+                }
+            }
+
+
+        :reqheader Authorization: access token of logged in user (required)
+        :param int user_id: id of user.
+        :resheader Content-Type: application/json
+        :status 200: user found
+        """
         check_priviledges()
         user = User.query.filter_by(user_id=user_id).first()
         if user is None:
@@ -74,6 +141,30 @@ class UserRes(Resource):
 
     @jwt_required
     def delete(self, user_id):
+        """
+        Delete user. Only priviledged users can use this method.
+
+        .. :quickref: Delete user; Delete user.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    DELETE /users/1 HTTP/1.1
+	    Host: example.com
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 204 NO CONTENT
+
+
+        :reqheader Authorization: access token of logged in user (required)
+        :param int user_id: id of user.
+        :status 204: user deleted
+        """
         check_priviledges()
         user = User.query.filter_by(user_id=user_id).first()
         if user is None:
@@ -85,29 +176,128 @@ class UserRes(Resource):
 class UsersRes(Resource):
     @jwt_required
     def get(self):
+        """
+        Get users. Only priviledged users can use this method.
+
+        .. :quickref: Get users; Get users.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    GET /users HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 200 OK
+	    Content-Type: application/json
+
+            {
+                "users": [
+                    {
+                        "user_id": 1,
+                        "password": "$pbkdf2-sha256$29000$7kp6XipQ",
+                        "username": "su"
+                    },
+                    {
+                        "user_id": 2,
+                        "password": "$pbkdf2-sha256$29000$8adovub",
+                        "username": "maria"
+                    }
+                ]
+            }
+
+
+        :reqheader Authorization: access token of logged in user (required)
+        :resheader Content-Type: application/json
+        :status 200: users found
+        """
         check_priviledges()
         users = User.query.all()
         return {'users': [u.to_json() for u in users]}
 
     @jwt_required
     def post(self):
+        """
+        Create user. Only priviledged users can use this method.
+
+        .. :quickref: Create user; Create user.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    POST /users HTTP/1.1
+	    Host: example.com
+	    Accept: application/json
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 201 CREATED
+	    Content-Type: application/json
+
+            {
+                "user_id": 1,
+                "message": "user 'joao' created"
+            }
+
+
+        :reqheader Authorization: access token of logged in user (required)
+        :resheader Content-Type: application/json
+        :status 201: user created
+        """
         check_priviledges()
         args = parser.parse(_USER_PASS_ARGS, request,
             locations=('form', 'json'))
 
         if User.query.filter_by(username=args['username']).first():
             return mk_errors(
-                400, 'username "{}" already taken'.format(args['username']))
+                400, 'username \'{}\' already taken'.format(args['username']))
         new_user = User.create_and_save(args['username'], args['password'])
 
         return {
             'message': 'user \'{}\' created'.format(args['username']),
             'user_id': int(new_user.user_id),
-        }
+        }, 201
 
 class TokenRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
+        """
+        Refresh access token.
+
+        .. :quickref: Refresh token; Refresh access token.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    POST /auth/token/refresh HTTP/1.1
+	    Host: example.com
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 200 OK
+	    Content-Type: application/json
+
+            {
+                "access_token": "lajdfh09l8valufd89y614b"
+            }
+
+        :reqheader Authorization: refresh token of logged in user (required)
+        :status 200: token refreshed
+        """
         current_user = get_jwt_identity()
         access_token = create_access_token(identity=current_user)
         return {'access_token': access_token}
@@ -120,11 +310,33 @@ def check_if_token_in_blacklist(decrypted_token):
 class LogoutAccess(Resource):
     @jwt_required
     def post(self):
+        """
+        Revoke access token.
+
+        .. :quickref: Access Logout; Revoke access token.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    POST /auth/logout/access HTTP/1.1
+	    Host: example.com
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 204 NO CONTENT
+
+        :reqheader Authorization: access token of logged in user (required)
+        :status 204: user logged out
+        """
         jti = get_raw_jwt()['jti']
         try:
             revoked_token = RevokedToken(jti=jti)
             revoked_token.save()
-            return mk_message('access token revoked')
+            return '', 204
         except:
             raise
             return mk_errors(500, 'error in logout')
@@ -132,11 +344,33 @@ class LogoutAccess(Resource):
 class LogoutRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
+        """
+        Revoke refresh token.
+
+        .. :quickref: Refresh Logout; Revoke refresh token.
+
+        **Example request**:
+
+        .. sourcecode:: http
+
+	    POST /auth/logout/refresh HTTP/1.1
+	    Host: example.com
+	    Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhb
+
+        **Example response**:
+
+        .. sourcecode:: http
+
+	    HTTP/1.1 204 NO CONTENT
+
+        :reqheader Authorization: refresh token of logged in user (required)
+        :status 204: token revoked
+        """
         jti = get_raw_jwt()['jti']
         try:
             revoked_token = RevokedToken(jti=jti)
             revoked_token.save()
-            return mk_message('refresh token revoked')
+            return '', 204
         except:
             return mk_errors('error in logout')
 
