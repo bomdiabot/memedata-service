@@ -280,7 +280,21 @@ def test_texts_post_correct_error_format_2(client_with_tok):
 
 def test_texts_post_correct_error_format_3(client_with_tok):
     resp = client_with_tok.post('/texts',
-            data={'content': 'correct', 'tags': 'blackl?isted,generated'})
+            data={'content': 'correct', 'tags': 'nonãscii,generated'})
+
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
+
+def test_texts_post_correct_error_format_4(client_with_tok):
+    resp = client_with_tok.post('/texts',
+            data={'content': 'correct', 'tags': 'UPPER,generated'})
+
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
+
+def test_texts_post_correct_error_format_5(client_with_tok):
+    resp = client_with_tok.post('/texts',
+            data={'content': 'correct', 'tags': ',,,,,generated'})
 
     assert resp.status_code == 400
     assert set(resp.json.keys()) == {'errors'}

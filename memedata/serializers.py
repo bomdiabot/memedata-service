@@ -13,6 +13,9 @@ from marshmallow.fields import Nested
 from memedata.database import db
 from memedata.models import Text, Tag
 
+def is_ascii(string):
+    return all(ord(c) < 128 for c in string)
+
 class TagSchema(ModelSchema):
     content = field_for(Tag, 'content', required=True)
     created_at = field_for(Tag, 'created_at', dump_only=True)
@@ -25,10 +28,19 @@ class TagSchema(ModelSchema):
 
     @validates('content')
     def validate_content(self, content):
-        if not content.isalnum():
-            raise ValidationError('"{}" must be alphanumeric'.format(content))
+        if not content:
+            raise ValidationError(
+                '\'{}\' cannot be empty'.format(content))
+        if ',' in content:
+            raise ValidationError(
+                '\'{}\' cannot contain commas'.format(content))
+        if ' ' in content:
+            raise ValidationError(
+                '\'{}\' cannot contain spaces'.format(content))
+        if not is_ascii(content):
+            raise ValidationError('\'{}\' must be ascii'.format(content))
         if not content.islower():
-            raise ValidationError('"{}" must be lower-case'.format(content))
+            raise ValidationError('\'{}\' must be lower-case'.format(content))
 
 class TextSchema(ModelSchema):
     content = field_for(Text, 'content', required=True)
