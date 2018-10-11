@@ -280,7 +280,21 @@ def test_texts_post_correct_error_format_2(client_with_tok):
 
 def test_texts_post_correct_error_format_3(client_with_tok):
     resp = client_with_tok.post('/texts',
-            data={'content': 'correct', 'tags': 'blackl?isted,generated'})
+            data={'content': 'correct', 'tags': 'nonãscii,generated'})
+
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
+
+def test_texts_post_correct_error_format_4(client_with_tok):
+    resp = client_with_tok.post('/texts',
+            data={'content': 'correct', 'tags': 'UPPER,generated'})
+
+    assert resp.status_code == 400
+    assert set(resp.json.keys()) == {'errors'}
+
+def test_texts_post_correct_error_format_5(client_with_tok):
+    resp = client_with_tok.post('/texts',
+            data={'content': 'correct', 'tags': ',,,,,generated'})
 
     assert resp.status_code == 400
     assert set(resp.json.keys()) == {'errors'}
@@ -354,7 +368,8 @@ def test_text_put_correct_response_format(client_with_tok):
 def test_text_put_correct_response_format_2(client_with_tok):
     obj = client_with_tok.post('/texts?content=eyb0ss').json['text']
     text_id = obj['text_id']
-    resp = client_with_tok.put('/texts/{}'.format(text_id), data={'wrong': 'keypair'})
+    resp = client_with_tok.put(
+        '/texts/{}'.format(text_id), data={'wrong': 'keypair'})
 
     assert resp.status_code == 200
     assert 'text' in resp.json
@@ -369,13 +384,30 @@ def test_text_put_correct_response_fields(client_with_tok):
     orig_text_id = orig_obj['text_id']
     orig_created_at = orig_obj['created_at']
     orig_updated_at = orig_obj['updated_at']
-    resp = client_with_tok.put('/texts/{}?content=updated'.format(orig_text_id))
+    resp = client_with_tok.put(
+        '/texts/{}?content=updated&tags=oi'.format(orig_text_id))
     obj = resp.json['text']
 
     assert obj['text_id'] == orig_text_id
     assert obj['created_at'] == orig_created_at
     assert obj['updated_at'] != orig_updated_at
     assert obj['content'] == 'updated'
+    assert obj['tags'] == ['oi']
+
+def test_text_put_correct_response_fields_2(client_with_tok):
+    orig_obj = client_with_tok.post('/texts?content=eyb0ss').json['text']
+    orig_text_id = orig_obj['text_id']
+    orig_created_at = orig_obj['created_at']
+    orig_updated_at = orig_obj['updated_at']
+    resp = client_with_tok.put('/texts/{}'.format(orig_text_id),
+        data={'content': 'updated2', 'tags': 'ey,b0ss'})
+    obj = resp.json['text']
+
+    assert obj['text_id'] == orig_text_id
+    assert obj['created_at'] == orig_created_at
+    assert obj['updated_at'] != orig_updated_at
+    assert obj['content'] == 'updated2'
+    assert set(obj['tags']) == {'ey', 'b0ss'}
 
 def test_text_put_correct_error_format_1(client_with_tok):
     resp = client_with_tok.put('/texts/3')

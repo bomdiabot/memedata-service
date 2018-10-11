@@ -13,6 +13,7 @@ git checkout $main_branch memedata/
 
 mv docs/build/html/* .
 rm -rf docs memedata publish_docs.sh
+touch .nojekyll
 
 git add -A
 git commit -m \

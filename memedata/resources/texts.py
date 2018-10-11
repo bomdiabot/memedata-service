@@ -151,7 +151,8 @@ class TextRes(Resource):
         text = TextRes.get_text(text_id)
         try:
             schema = TextSchema()
-            text = schema.load(request.values, instance=text, partial=True)
+            args = TextsRes.parse_post_args(request)
+            text = schema.load(args, instance=text, partial=True)
         except ValidationError as e:
             return mk_errors(400, fmt_validation_error_messages(e.messages))
         db.session.add(text)
