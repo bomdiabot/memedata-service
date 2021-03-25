@@ -36,7 +36,7 @@ PyJWT==1.6.4
 pyparsing==2.2.0
 pytest==3.8.0
 pytz==2018.5
-PyYAML==3.13
+PyYAML==5.4
 requests==2.20.0
 six==1.11.0
 snowballstemmer==1.2.1
