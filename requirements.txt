@@ -44,6 +44,6 @@ Sphinx==1.8.0
 sphinxcontrib-httpdomain==1.7.0
 sphinxcontrib-websupport==1.1.0
 SQLAlchemy==1.2.11
-urllib3==1.23
+urllib3==1.26.5
 webargs==4.0.0
 Werkzeug==0.14.1
