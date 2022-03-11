@@ -27,7 +27,7 @@ numpy==1.15.1
 packaging==17.1
 passlib==1.7.1
 pathlib2==2.3.2
-Pillow==5.2.0
+Pillow==9.0.1
 pluggy==0.7.1
 py==1.6.0
 pyaml==17.12.1
